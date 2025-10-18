@@ -100,6 +100,42 @@ if (!process.env.DATABASE_URL) {
     }
   });
 
+  // Fetch from external source and persist to DB, return saved row
+  app.post('/api/rates/sync', async (req, res) => {
+    try {
+      const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        return res.status(502).json({ error: 'Failed to fetch external rates' });
+      }
+      const raw = await response.json();
+      const payload = {
+        vedhani: raw['24K Gold'] ?? '',
+        ornaments22k: raw['22K Gold'] ?? '',
+        ornaments18k: raw['18K Gold'] ?? '',
+        silver: raw['Silver'] ?? '',
+      };
+
+      const existingRates = await db.select().from(rates).limit(1);
+
+      let result;
+      if (existingRates.length > 0) {
+        result = await db.update(rates)
+          .set({ ...payload, updatedAt: new Date() })
+          .where(eq(rates.id, existingRates[0].id))
+          .returning();
+      } else {
+        result = await db.insert(rates).values(payload).returning();
+      }
+
+      return res.json(result[0]);
+    } catch (error) {
+      console.error('Error syncing rates from external source:', error);
+      return res.status(500).json({ error: 'Failed to sync rates' });
+    }
+  });
+
   app.get('/api/images', async (req, res) => {
     try {
       const allImages = await db.select().from(images).orderBy(desc(images.uploadedAt));

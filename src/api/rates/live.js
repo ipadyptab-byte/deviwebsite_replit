@@ -1,5 +1,5 @@
 /**
- * Vercel Serverless Function: Live Rates
+ * Vercel Serverless Function: Live Rates Proxy
  * GET /api/rates/live
  */
 module.exports = async (req, res) => {

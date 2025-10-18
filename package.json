@@ -33,8 +33,7 @@
   "scripts": {
     "start": "node server/index.js",
     "start:client": "cross-env DANGEROUSLY_DISABLE_HOST_CHECK=true PORT=5000 HOST=0.0.0.0 npx react-scripts start",
-    "build": "CI=false react-scripts build",
-    "postinstall": "npm run build",
+    "build": "cross-env CI=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/index.js",
@@ -52,4 +51,19 @@
   },
   "browserslist": {
     "production": [
-      \">0.2%\",\n      \"not dead\",\n      \"not op_mini all\"\n    ],\n    \"development\": [\n      \"last 1 chrome version\",\n      \"last 1 firefox version\",\n      \"last 1 safari version\"\n    ]\n  },\n  \"devDependencies\": {\n    \"concurrently\": \"^9.2.1\",\n    \"cross-env\": \"^10.1.0\",\n    \"drizzle-kit\": \"^0.31.5\"\n  }\n}\n
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "drizzle-kit": "^0.31.5"
+  }
+}\n}\n

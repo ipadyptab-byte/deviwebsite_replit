@@ -1,11 +1,12 @@
 /**
- * Vercel Serverless Function: Live Rates
+ * Vercel Serverless Function: Live Rates (CommonJS export)
  * GET /api/rates/live
  */
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
   }
 
   try {
@@ -23,7 +24,8 @@ export default async function handler(req, res) {
     });
 
     if (!response || !response.ok) {
-      return res.status(502).json({ error: 'Failed to fetch external rates' });
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(502).end(JSON.stringify({ error: 'Failed to fetch external rates' }));
     }
 
     // Some providers may send JSON with incorrect content-type; parse defensively
@@ -36,7 +38,10 @@ export default async function handler(req, res) {
       try {
         raw = JSON.parse(text);
       } catch {
-        return res.status(502).json({ error: 'External response was not JSON', contentType: ct, preview: text.slice(0, 120) });
+        res.setHeader('Content-Type', 'application/json');
+        return res
+          .status(502)
+          .end(JSON.stringify({ error: 'External response was not JSON', contentType: ct, preview: text.slice(0, 120) }));
       }
     }
 
@@ -50,9 +55,11 @@ export default async function handler(req, res) {
     };
 
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate'); // cache at edge for 5 min
-    return res.status(200).json(payload);
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(200).end(JSON.stringify(payload));
   } catch (error) {
     console.error('Error in /api/rates/live:', error);
-    return res.status(500).json({ error: 'Failed to fetch live rates', details: String(error) });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(500).end(JSON.stringify({ error: 'Failed to fetch live rates', details: String(error) }));
   }
-}
+};

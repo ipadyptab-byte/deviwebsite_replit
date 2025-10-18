@@ -1,0 +1,54 @@
+.store-info-section {
+  font-family: "El Messiri", sans-serif;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 2rem;
+  width: 100%;
+  background-color: #fff;
+
+  .text-content {
+    flex: 1;
+    padding: 1rem;
+
+    h2 {
+      font-size: 2rem;
+      color: #333;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #555;
+      text-align: justify;
+    }
+  }
+
+  .image-content {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .store-info-section {
+    flex-direction: column;
+
+    .text-content,
+    .image-content {
+      flex: none;
+      width: 100%;
+      padding: 0.5rem;
+    }
+
+    .image-content {
+      order: 2;
+    }
+  }
+}

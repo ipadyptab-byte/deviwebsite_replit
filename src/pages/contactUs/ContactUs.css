@@ -1,0 +1,268 @@
+@import url("https://fonts.googleapis.com/css2?family=El+Messiri:wght@400..700&family=Jost:ital,wght@0,100..900;1,100..900&family=Playwrite+US+Trad:wght@100..400&display=swap");
+
+.el-messiri {
+  font-family: "El Messiri", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.contact-us-title {
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.521);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.contact-us-title h1 {
+  font-size: 65px;
+  font-weight: 500;
+  font-family: "El Messiri", sans-serif;
+}
+
+.contact-us-content {
+  padding: 5% 0;
+  height: auto;
+  margin: auto;
+  width: 75%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.contact-us-left-container {
+  width: 50%;
+  margin-right: 25px;
+}
+
+.contact-us-left-container h1 {
+  color: #31313b;
+  font-family: "El Messiri", Sans-serif;
+  font-size: 37px;
+  font-weight: 700;
+}
+
+.contact-us-left-container p {
+  color: #54595f;
+  font-size: 17px;
+  word-spacing: 2.5px;
+  line-height: 32px;
+}
+
+.store-info {
+  height: auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.store-info-block {
+  display: flex;
+  align-items: start;
+  width: 48%;
+  padding: 3%;
+  background-color: rgba(128, 128, 128, 0.078);
+  border-radius: 15px;
+  margin: 2% 0;
+}
+
+.store-info-block h2 {
+  color: #31313b;
+  font-family: "El Messiri", Sans-serif;
+  font-weight: 500;
+}
+
+.store-info-inner-block {
+  margin-left: 10px;
+}
+
+.contact-us-icons {
+  color: red;
+  font-size: 30px;
+}
+
+.get-direction,
+.mail {
+  color: red;
+  text-decoration: none;
+}
+
+.get-direction:hover,
+.mail:hover {
+  text-decoration: underline;
+}
+
+.store-info-inner-block p {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.contact-us-right-container {
+  width: 45%;
+  height: 100%;
+  order: 2;
+}
+
+.store-image {
+  border-radius: 15px;
+  height: 100%;
+  width: 100%;
+  filter: brightness(118%) contrast(105%) saturate(94%) blur(0px)
+    hue-rotate(0deg);
+  box-shadow: 4px 7px 33px 0px rgba(0, 0, 0, 0.5);
+}
+
+.contact-us-end-section{
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Tablet view */
+@media (max-width: 1024px) {
+  .contact-us-content {
+    width: 85%;
+    padding: 4% 0;
+    flex-direction: column;
+  }
+
+  .contact-us-left-container,
+  .contact-us-right-container {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .contact-us-right-container {
+    order: 2;
+    margin-top: 20px;
+  }
+
+  .store-info-block {
+    width: 100%;
+    margin: 3% 0;
+  }
+
+  .contact-us-title h1 {
+    font-size: 45px;
+  }
+
+  .contact-us-left-container h1 {
+    font-size: 30px;
+  }
+
+  .contact-us-left-container p {
+    font-size: 16px;
+    line-height: 30px;
+  }
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .contact-us-title h1 {
+    font-size: 35px;
+  }
+
+  .contact-us-content {
+    width: 95%;
+    padding: 3% 0;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-us-left-container,
+  .contact-us-right-container {
+    width: 95%;
+    margin-right: 0;
+  }
+
+  .contact-us-right-container {
+    order: 2;
+    margin-top: 20px;
+  }
+
+  .store-info {
+    justify-content: center;
+  }
+
+  .store-info-block {
+    width: 90%;
+    margin: 4% 0;
+  }
+
+  .contact-us-left-container h1 {
+    font-size: 25px;
+  }
+
+  .contact-us-left-container p {
+    font-size: 15px;
+    line-height: 28px;
+  }
+
+  .store-info-block h2 {
+    font-size: 20px;
+  }
+
+  .store-info-inner-block p {
+    font-size: 14px;
+  }
+
+  .store-image {
+    height: auto;
+    width: 100%;
+  }
+
+  .contact-us-end-section {
+    flex-direction: column;
+    align-items: center;
+}
+}
+
+/* Small mobile view */
+@media (max-width: 480px) {
+  .contact-us-title h1 {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .contact-us-content {
+    width: 100%;
+    padding: 2% 0;
+  }
+
+  .contact-us-left-container h1 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .contact-us-left-container p {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .store-info-block {
+    width: 100%;
+  }
+
+  .store-info-block h2 {
+    font-size: 18px;
+  }
+
+  .store-info-inner-block p {
+    font-size: 13px;
+  }
+
+  .contact-us-icons {
+    font-size: 25px;
+  }
+
+  .store-image {
+    border-radius: 10px;
+  }
+}

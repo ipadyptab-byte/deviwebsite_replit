@@ -1,0 +1,67 @@
+.icon_container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.icon_wrapper {
+    font-size: 24px;
+    color: #333;
+}
+
+.title {
+    font-size: 16px;
+    margin-left: 10px;
+    color: #333;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    top: 120%;
+    left: 0%;
+    transform: translateX(-50%);
+    width: 300px;
+    background-color: #fff;
+    border: 1px solid black;
+    /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+    padding: 20px;
+    z-index: 10;
+    color: black;
+}
+
+.tooltip h1{
+    text-align: center;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+.border-line{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 35px;
+}
+
+.border-line img{
+    width: 80%;
+    height: 10%;
+    margin: auto;
+}
+
+.rates{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.tooltip ul{
+    list-style: none;
+}
+
+.icon_container:hover .tooltip {
+    display: block;
+}

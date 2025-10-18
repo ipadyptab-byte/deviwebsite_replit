@@ -1,0 +1,50 @@
+.schemes {
+  padding: 2rem;
+  font-family: "El Messiri", sans-serif;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+  backdrop-filter: blur(10px);
+
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #333;
+  }
+
+  .schemes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+  }
+
+  .scheme-card {
+    background: linear-gradient(to right, #fff, #f9f9f9);
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 320px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #c00;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #555;
+      text-align: justify;
+    }
+  }
+}

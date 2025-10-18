@@ -1,0 +1,81 @@
+/* src/App.css */
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .upload-container input[type="file"] {
+    margin-bottom: 10px;
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .upload-container button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .upload-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .upload-container progress {
+    width: 100%;
+    margin-bottom: 10px;
+    appearance: none;
+    height: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .upload-container progress::-webkit-progress-bar {
+    background-color: #f3f3f3;
+  }
+  
+  .upload-container progress::-webkit-progress-value {
+    background-color: #007bff;
+  }
+  
+  .upload-container p {
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  /* Mobile styles */
+  @media (max-width: 600px) {
+    .upload-container {
+      padding: 15px;
+    }
+  
+    .upload-container input[type="file"] {
+      font-size: 14px;
+      padding: 8px;
+    }
+  
+    .upload-container button {
+      font-size: 14px;
+      padding: 8px 15px;
+    }
+  
+    .upload-container p {
+      font-size: 14px;
+    }
+  }
+  

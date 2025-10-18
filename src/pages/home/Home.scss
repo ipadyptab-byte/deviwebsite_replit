@@ -1,0 +1,42 @@
+@import '../../component/Components.scss';
+.hero_image{
+    display:block;
+    width:100%;
+    img{
+        display: block;
+        width:100%;
+    }
+}
+.mx_width{
+    &.themeContainer{
+        justify-content: space-between;
+        flex-direction: column;
+    }
+}
+.fluid{
+    display:block;
+    width:100%;
+}
+.hero_image{
+    display:block;
+    width:100%;
+    overflow: hidden;
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .popup img {
+    max-height: 90%;
+    max-width: 90%;
+  }

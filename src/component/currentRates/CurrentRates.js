@@ -13,26 +13,28 @@ const CurrentRates = () => {
   });
 
   useEffect(() => {
-    const fetchRates = async () => {
-      try {
-        const data = await ratesAPI.getRates();
-        if (data) {
-          setRates({
-            vedhani: data.vedhani || "",
-            ornaments22K: data.ornaments22k || "",
-            ornaments18K: data.ornaments18k || "",
-            silver: data.silver || "",
-          });
-        } else {
-          console.log("No rates found!");
-        }
-      } catch (error) {
-        console.error("Error fetching rates: ", error);
+  const fetchRates = async () => {
+    try {
+      const data = await ratesAPI.getRates();
+      if (data) {
+        setRates({
+          vedhani: data.vedhani,
+          ornaments22K: data.ornaments22k,
+          ornaments18K: data.ornaments18k,
+          silver: data.silver,
+        });
+      } else {
+        console.log("No rates found!");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching rates:", error);
+    }
+  };
 
-    fetchRates();
-  }, []);
+  fetchRates();
+}, []);
+
+
 
   return (
     <div className="icon_container">

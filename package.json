@@ -29,7 +29,7 @@
   },
   "proxy": "http://localhost:3001",
   "scripts": {
-    "start": "cross-env DANGEROUSLY_DISABLE_HOST_CHECK=true PORT=5000 HOST=0.0.0.0 npx react-scripts start",
+     "start": "serve -s build",  // use 'serve' to serve built React files
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

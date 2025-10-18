@@ -1,12 +1,10 @@
-const API_BASE_URL = typeof window !== 'undefined' && window.location.hostname.endsWith('vercel.app')
-  ? 'https://deviwebsite-replit.onrender.com'
-  : '';
+const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
     const response = await fetch(`${API_BASE_URL}/api/rates/live`, {
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
     if (!response.ok) {

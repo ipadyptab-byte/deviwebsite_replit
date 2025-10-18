@@ -9,6 +9,7 @@ const Admin = () => {
     ornaments18K: "",
     silver: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,9 +37,35 @@ const Admin = () => {
     }
   };
 
+  const handleSyncFromLive = async () => {
+    try {
+      setLoading(true);
+      const saved = await ratesAPI.syncFromLive();
+      alert("Live rates fetched and saved to database.");
+      setRates({
+        vedhani: saved.vedhani ?? "",
+        ornaments22K: saved.ornaments22k ?? "",
+        ornaments18K: saved.ornaments18k ?? "",
+        silver: saved.silver ?? "",
+      });
+    } catch (error) {
+      console.error("Error syncing rates from live:", error);
+      alert("Failed to sync rates from live.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="admin-page-container">
       <h2>Upload Current Rates</h2>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <button type="button" onClick={handleSyncFromLive} disabled={loading}>
+          {loading ? 'Syncing…' : 'Fetch Live and Save'}
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Vedhani (10 grams):</label>

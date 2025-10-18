@@ -38,6 +38,30 @@ app.get('/api/rates', async (req, res) => {
   }
 });
 
+// Live rates from external provider; normalize to our schema keys
+app.get('/api/rates/live', async (req, res) => {
+  try {
+    const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) {
+      return res.status(502).json({ error: 'Failed to fetch external rates' });
+    }
+    const raw = await response.json();
+    res.json({
+      vedhani: raw['24K Gold'] ?? '',
+      ornaments22K: raw['22K Gold'] ?? '',
+      ornaments18K: raw['18K Gold'] ?? '',
+      silver: raw['Silver'] ?? '',
+      updatedAt: new Date().toISOString(),
+      source: 'businessmantra',
+    });
+  } catch (error) {
+    console.error('Error fetching live rates:', error);
+    res.status(500).json({ error: 'Failed to fetch live rates' });
+  }
+});
+
 app.put('/api/rates', async (req, res) => {
   try {
     const { vedhani, ornaments22K, ornaments18K, silver } = req.body;

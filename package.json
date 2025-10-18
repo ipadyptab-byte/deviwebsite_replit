@@ -29,7 +29,7 @@
   },
   "proxy": "http://localhost:3001",
   "scripts": {
-     "start": "serve -s build",  // use 'serve' to serve built React files
+     "start": "serve -s build",  
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

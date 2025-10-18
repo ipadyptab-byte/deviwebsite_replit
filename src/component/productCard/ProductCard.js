@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./ProductCard.scss";
 import { Link } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
-import { MdShoppingCart } from "react-icons/md";
 import { AiOutlineHeart } from "react-icons/ai";
 import { IoIosEye } from "react-icons/io";
 
@@ -72,9 +71,9 @@ const ProductCard = (props) => {
                       <IoIosEye />
                     </div>
                     {
-                      product.product_segment == "BESTSELLERS" ? <div className="product_label bs">Best Sellers</div>
-                        : product.product_segment == "NEW ARRIVALS" ? <div className="product_label na">New Arrivals</div>
-                          : product.product_segment == "HOT" ? <div className="product_label hot">Our Picks</div>
+                      product.product_segment === "BESTSELLERS" ? <div className="product_label bs">Best Sellers</div>
+                        : product.product_segment === "NEW ARRIVALS" ? <div className="product_label na">New Arrivals</div>
+                          : product.product_segment === "HOT" ? <div className="product_label hot">Our Picks</div>
                             : null
 
                     }

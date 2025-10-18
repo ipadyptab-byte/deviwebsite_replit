@@ -1,37 +1,65 @@
-// live.js
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
+/**
+ * Vercel Serverless Function: Live Rates
+ * GET /api/rates/live
+ */
 module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
   }
 
   try {
-    const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+    // Use global fetch if available; otherwise fall back to node-fetch
+    const doFetch = async (url, options) => {
+      if (typeof fetch === 'function') {
+        return fetch(url, options);
+      }
+      const mod = await import('node-fetch');
+      return mod.default(url, options);
+    };
+
+    const response = await doFetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
       headers: { Accept: 'application/json' },
     });
 
-    if (!response.ok) {
-      return res.status(502).json({ error: 'Failed to fetch external rates' });
+    if (!response || !response.ok) {
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(502).end(JSON.stringify({ error: 'Failed to fetch external rates' }));
     }
 
-    const raw = await response.json();
+    // Some providers may send JSON with incorrect content-type; parse defensively
+    let raw;
+    const ct = response.headers?.get?.('content-type') || '';
+    if (ct.includes('application/json')) {
+      raw = await response.json();
+    } else {
+      const text = await response.text();
+      try {
+        raw = JSON.parse(text);
+      } catch {
+        res.setHeader('Content-Type', 'application/json');
+        return res
+          .status(502)
+          .end(JSON.stringify({ error: 'External response was not JSON', contentType: ct, preview: text.slice(0, 120) }));
+      }
+    }
 
-    const rates = {
-      vedhani: raw['24K Gold'] || '',
-      ornaments22K: raw['22K Gold'] || '',
-      ornaments18K: raw['18K Gold'] || '',
-      silver: raw['Silver'] || '',
+    const payload = {
+      vedhani: raw['24K Gold'] ?? '',
+      ornaments22K: raw['22K Gold'] ?? '',
+      ornaments18K: raw['18K Gold'] ?? '',
+      silver: raw['Silver'] ?? '',
       updatedAt: new Date().toISOString(),
       source: 'businessmantra',
     };
 
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate'); // cache at edge for 5 min
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate');
-    return res.status(200).json(rates);
+    return res.status(200).end(JSON.stringify(payload));
   } catch (error) {
-    console.error('Error fetching rates:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error in /api/rates/live:', error);
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(500).end(JSON.stringify({ error: 'Failed to fetch live rates', details: String(error) }));
   }
 };

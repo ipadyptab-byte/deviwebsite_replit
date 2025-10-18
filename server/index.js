@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
 const { eq, desc } = require('drizzle-orm');
@@ -155,6 +156,19 @@ if (!process.env.DATABASE_URL) {
     }
   });
 }
+
+// Serve the React build as static files (single-service deployment)
+const buildPath = path.join(__dirname, '..', 'build');
+app.use(express.static(buildPath));
+
+// SPA fallback: send index.html for non-API routes
+app.get('*', (req, res) => {
+  // If the request is for an API route, let previous handlers deal with it
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  return res.sendFile(path.join(buildPath, 'index.html'));
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);

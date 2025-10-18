@@ -10,31 +10,30 @@ const CurrentRates = () => {
     ornaments18K: '',
     silver: '',
   });
+
   const [error, setError] = useState('');
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const fetchRates = async () => {
       try {
-        const response = await fetch(
-          'https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php',
-          { headers: { Accept: 'application/json' } }
-        );
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}`);
-        }
-        const raw = await response.json();
+        const response = await fetch('/api/rates/live', {
+          headers: { Accept: 'application/json' },
+        });
+        if (!response.ok) throw new Error('Fetch failed');
+        const data = await response.json();
         setRates({
-          vedhani: raw['24K Gold'] || 'N/A',
-          ornaments22K: raw['22K Gold'] || 'N/A',
-          ornaments18K: raw['18K Gold'] || 'N/A',
-          silver: raw['Silver'] || 'N/A',
+          vedhani: data.vedhani || 'N/A',
+          ornaments22K: data.ornaments22K || 'N/A',
+          ornaments18K: data.ornaments18K || 'N/A',
+          silver: data.silver || 'N/A',
         });
       } catch (err) {
-        console.error('Fetch error:', err);
+        console.error(err);
         setError('Failed to load rates.');
       }
     };
+
     fetchRates();
   }, []);
 

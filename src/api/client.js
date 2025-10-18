@@ -2,14 +2,25 @@ const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
-    const response = await fetch(`${API_BASE_URL}/api/rates`);
+    const response = await fetch(`${API_BASE_URL}/api/rates/live`, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
     if (!response.ok) {
       if (response.status === 404) {
         return null;
       }
       throw new Error('Failed to fetch rates');
     }
-    return response.json();
+    const raw = await response.json();
+    // Normalize keys for CurrentRates component expectations
+    return {
+      vedhani: raw.vedhani ?? raw['24K Gold'] ?? '',
+      ornaments22k: raw.ornaments22k ?? raw.ornaments22K ?? raw['22K Gold'] ?? '',
+      ornaments18k: raw.ornaments18k ?? raw.ornaments18K ?? raw['18K Gold'] ?? '',
+      silver: raw.silver ?? raw['Silver'] ?? '',
+    };
   },
 
   async updateRates(rates) {

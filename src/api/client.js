@@ -2,29 +2,41 @@ const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
-    // Fetch via backend proxy to avoid CORS issues
-    const response = await fetch(`${API_BASE_URL}/api/rates/live`, {
-      headers: {
-        Accept: 'application/json',
-      },
-    });
+    // Try backend proxy first (works on Vercel/production)
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/rates/live`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) {
+        const raw = await res.json();
+        return normalizeRates(raw);
+      }
+      // If 404 (e.g., local dev without serverless), fall through to external fetch
+    } catch {
+      // Network error; fall back to external with CORS helper
+    }
 
+    // Fallback: fetch external via a CORS-friendly wrapper for local development
+    const externalUrl = encodeURIComponent('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php');
+    const corsWrapper = `https://api.allorigins.win/get?url=${externalUrl}`;
+
+    const response = await fetch(corsWrapper, { headers: { Accept: 'application/json' } });
     if (!response.ok) {
       if (response.status === 404) {
         return null;
       }
-      throw new Error('Failed to fetch rates');
+      throw new Error('Failed to fetch rates (fallback)');
     }
 
-    const raw = await response.json();
+    const wrapped = await response.json(); // { contents: string, status: { ... } }
+    let raw;
+    try {
+      raw = JSON.parse(wrapped.contents);
+    } catch {
+      throw new Error('Fallback response was not valid JSON');
+    }
 
-    // Normalize keys for CurrentRates component expectations
-    return {
-      vedhani: raw.vedhani ?? raw['24K Gold'] ?? '',
-      ornaments22k: raw.ornaments22k ?? raw.ornaments22K ?? raw['22K Gold'] ?? '',
-      ornaments18k: raw.ornaments18k ?? raw.ornaments18K ?? raw['18K Gold'] ?? '',
-      silver: raw.silver ?? raw['Silver'] ?? '',
-    };
+    return normalizeRates(raw);
   },
 
   async updateRates(rates) {
@@ -41,6 +53,15 @@ export const ratesAPI = {
     return response.json();
   },
 };
+
+function normalizeRates(raw) {
+  return {
+    vedhani: raw.vedhani ?? raw['24K Gold'] ?? '',
+    ornaments22k: raw.ornaments22k ?? raw.ornaments22K ?? raw['22K Gold'] ?? '',
+    ornaments18k: raw.ornaments18k ?? raw.ornaments18K ?? raw['18K Gold'] ?? '',
+    silver: raw.silver ?? raw['Silver'] ?? '',
+  };
+}
 
 export const imagesAPI = {
   async getAllImages() {

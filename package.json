@@ -24,7 +24,8 @@
     "sass": "^1.64.2",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4",
-    "ws": "^8.18.3"
+    "ws": "^8.18.3",
+    "node-fetch": "^3.3.2"
   },
   "proxy": "http://localhost:3001",
   "scripts": {
@@ -33,7 +34,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/index.js",
-    "dev": "concurrently \"npm run server\" \"npm start\"",
+    "dev": "concurrently \\\"npm run server\\\" \\\"npm start\\\"",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

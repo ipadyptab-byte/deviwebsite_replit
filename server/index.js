@@ -3,6 +3,8 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
 const { eq, desc } = require('drizzle-orm');
+// Use node-fetch in CommonJS via dynamic import for Node versions without global fetch
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3001;

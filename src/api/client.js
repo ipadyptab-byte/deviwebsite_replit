@@ -2,8 +2,8 @@ const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
-    // Fetch directly from Business Mantra API
-    const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+    // Fetch via backend proxy to avoid CORS issues
+    const response = await fetch(`${API_BASE_URL}/api/rates/live`, {
       headers: {
         Accept: 'application/json',
       },
@@ -16,19 +16,7 @@ export const ratesAPI = {
       throw new Error('Failed to fetch rates');
     }
 
-    // Some providers may send JSON with incorrect content-type; parse defensively
-    let raw;
-    const ct = response.headers?.get?.('content-type') || '';
-    if (ct.includes('application/json')) {
-      raw = await response.json();
-    } else {
-      const text = await response.text();
-      try {
-        raw = JSON.parse(text);
-      } catch {
-        throw new Error(`External response was not JSON. Content-Type: ${ct}`);
-      }
-    }
+    const raw = await response.json();
 
     // Normalize keys for CurrentRates component expectations
     return {

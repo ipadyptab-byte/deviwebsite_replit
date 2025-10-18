@@ -2,6 +2,9 @@
   "name": "jewellery",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "@testing-library/jest-dom": "^5.17.0",
@@ -27,14 +30,15 @@
     "ws": "^8.18.3",
     "node-fetch": "^3.3.2"
   },
-  "proxy": "http://localhost:3001",
   "scripts": {
-    "start": "cross-env DANGEROUSLY_DISABLE_HOST_CHECK=true PORT=5000 HOST=0.0.0.0 npx react-scripts start",
+    "start": "node server/index.js",
+    "start:client": "cross-env DANGEROUSLY_DISABLE_HOST_CHECK=true PORT=5000 HOST=0.0.0.0 npx react-scripts start",
     "build": "react-scripts build",
+    "postinstall": "npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/index.js",
-    "dev": "concurrently \\\"npm run server\\\" \\\"npm start\\\"",
+    "dev": "concurrently \\\"npm run server\\\" \\\"npm run start:client\\\"",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

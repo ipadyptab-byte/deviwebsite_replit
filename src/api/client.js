@@ -2,14 +2,22 @@ const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
-    const response = await fetch(`${API_BASE_URL}/api/rates`);
+    const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
     if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
       throw new Error('Failed to fetch rates');
     }
-    return response.json();
+    const raw = await response.json();
+    // Normalize external API fields to our app's expected shape
+    return {
+      vedhani: raw['24K Gold'] ?? '',
+      ornaments22k: raw['22K Gold'] ?? '',
+      ornaments18k: raw['18K Gold'] ?? '',
+      silver: raw['Silver'] ?? '',
+    };
   },
 
   async updateRates(rates) {

@@ -50,8 +50,8 @@ const CurrentRates = () => {
         </div>
         <ul>
           <li className='rates'>Vedhani  <span>₹{rates.vedhani || "N/A"}</span></li><br/>
-          <li className='rates'> 22KT <span>₹{rates.ornaments22K || "N/A"}</span></li><br/>
-          <li className='rates'>18KT <span>₹{rates.ornaments18K || "N/A"}</span></li><br/>
+          <li className='rates'> Gold 22KT <span>₹{rates.ornaments22K || "N/A"}</span></li><br/>
+          <li className='rates'>Gold 18KT <span>₹{rates.ornaments18K || "N/A"}</span></li><br/>
           <li className='rates'>Silver <span>₹{rates.silver || "N/A"}</span></li>
         </ul>
       </div>

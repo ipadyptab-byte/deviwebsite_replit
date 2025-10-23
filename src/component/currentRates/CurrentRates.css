@@ -36,6 +36,10 @@
     font-weight: 400;
 }
 
+.tooltip h3{
+    text-align: center;
+}
+
 .border-line{
     display: flex;
     justify-content: center;

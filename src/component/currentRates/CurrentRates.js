@@ -41,13 +41,14 @@ const CurrentRates = () => {
       <span className="icon_wrapper">
         <BsGraphUpArrow />
       </span>  
-      <span className="title">Current Rates</span> 
+      <span className="title">Current Metal Rates</span> 
 
       <div className="tooltip">
-        <h1>Today's Gold Rates</h1>
+        <h1>Current Metal Rates</h1>
         <div className='border-line'>
         <img src={borderLine} alt='border line'/>
         </div>
+        <h3>Rate Per 10 Gms</h3>
         <ul>
           <li className='rates'>Vedhani  <span>₹{rates.vedhani || "N/A"}</span></li><br/>
           <li className='rates'> 22KT <span>₹{rates.ornaments22K || "N/A"}</span></li><br/>

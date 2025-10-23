@@ -48,7 +48,7 @@ const CurrentRates = () => {
         <div className='border-line'>
         <img src={borderLine} alt='border line'/>
         </div>
-        <h3>Rate Per 10 Gms</h3>
+        <h1>Rate Per 10 Gms</h1>
         <ul>
           <li className='rates'>Vedhani 24KT  <span>₹{rates.vedhani || "N/A"}</span></li><br/>
           <li className='rates'> Gold 22KT <span>₹{rates.ornaments22K || "N/A"}</span></li><br/>

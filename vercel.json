@@ -1,20 +1,25 @@
 {
   "version": 2,
+  "functions": {
+    "api/rates/inspect-remote.js": {
+      "runtime": "nodejs20.x",
+      "source": "src/api/rates/inspect-remote.js"
+    },
+    "api/rates/import-remote.js": {
+      "runtime": "nodejs20.x",
+      "source": "src/api/rates/import-remote.js"
+    }
+  },
   "builds": [
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    },
-    {
-      "src": "src/api/**/*.js",
-      "use": "@vercel/node"
+      "config": { "distDir": "build" }
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/api/rates/inspect-remote", "dest": "api/rates/inspect-remote.js" },
+    { "src": "/api/rates/import-remote", "dest": "api/rates/import-remote.js" },
     { "src": "/(.*)", "dest": "/build/$1" }
   ]
 }

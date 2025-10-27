@@ -3,7 +3,7 @@
  * GET /api/setup/init
  * Creates required tables if they do not exist.
  */
-import { Client } from 'pg';
+const { Client } = require('pg');
 
 const createTablesSQL = `
 CREATE TABLE IF NOT EXISTS rates (
@@ -24,15 +24,17 @@ CREATE TABLE IF NOT EXISTS images (
 );
 `;
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
   }
 
   const dbUrl = process.env.DATABASE_URL;
   if (!dbUrl) {
-    return res.status(500).json({ error: 'DATABASE_URL is not set' });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(500).end(JSON.stringify({ error: 'DATABASE_URL is not set' }));
   }
 
   const client = new Client({ connectionString: dbUrl });
@@ -40,11 +42,13 @@ export default async function handler(req, res) {
   try {
     await client.connect();
     await client.query(createTablesSQL);
-    return res.status(200).json({ status: 'ok', message: 'Tables ensured (created if missing).' });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(200).end(JSON.stringify({ status: 'ok', message: 'Tables ensured (created if missing).' }));
   } catch (error) {
     console.error('DB init error:', error);
-    return res.status(500).json({ error: 'Failed to initialize tables', details: String(error) });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(500).end(JSON.stringify({ error: 'Failed to initialize tables', details: String(error) }));
   } finally {
     try { await client.end(); } catch (_) {}
   }
-}
+};

@@ -2,18 +2,30 @@ const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
-    // Try backend proxy first (works on Vercel/production)
+    // Prefer reading from our Vercel DB first
     try {
-      const res = await fetch(`${API_BASE_URL}/api/rates/live`, {
+      const resDb = await fetch(`${API_BASE_URL}/api/rates`, {
         headers: { Accept: 'application/json' },
       });
-      if (res.ok) {
-        const raw = await res.json();
-        return normalizeRates(raw);
+      if (resDb.ok) {
+        const rawDb = await resDb.json();
+        return normalizeRates(rawDb);
       }
-      // If 404 (e.g., local dev without serverless), fall through to external fetch
     } catch {
-      // Network error; fall back to external with CORS helper
+      // ignore and try next
+    }
+
+    // Then try backend proxy from external API
+    try {
+      const resLive = await fetch(`${API_BASE_URL}/api/rates/live`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (resLive.ok) {
+        const rawLive = await resLive.json();
+        return normalizeRates(rawLive);
+      }
+    } catch {
+      // ignore and try fallback
     }
 
     // Fallback: fetch external via a CORS-friendly wrapper for local development

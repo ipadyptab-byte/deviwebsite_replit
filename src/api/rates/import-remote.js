@@ -56,13 +56,18 @@ module.exports = async (req, res) => {
 
     // Try to fetch latest row from remote 'rates' table
     // Be defensive with column names (snake_case expected)
-    const { rows } = await remotePool.query(
-      `SELECT vedhani, ornaments22k, ornaments18k, silver, updated_at
-       FROM rates
-       ORDER BY updated_at DESC
-       LIMIT 1`
-    );
-
+    const { rows } = await remotePool.query(`
+  SELECT
+    gold_24k_sale AS vedhani,
+    gold_22k_sale AS ornaments22k,
+    gold_18k_sale AS ornaments18k,
+    silver_per_kg_sale AS silver,
+    created_date AS updated_at
+  FROM gold_rates
+  WHERE is_active = true
+  ORDER BY created_date DESC
+  LIMIT 1
+`);
     if (!rows || rows.length === 0) {
       res.setHeader('Content-Type', 'application/json');
       return res.status(404).end(JSON.stringify({ error: 'No rates found in remote database' }));

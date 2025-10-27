@@ -2,7 +2,20 @@ const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
-    // Try backend proxy first (works on Vercel/production)
+    // 1) Try DB-backed endpoint first (what we want to show in UI)
+    try {
+      const dbRes = await fetch(`${API_BASE_URL}/api/rates`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (dbRes.ok) {
+        const row = await dbRes.json();
+        return normalizeRates(row);
+      }
+    } catch {
+      // Ignore and fall through
+    }
+
+    // 2) Fallback to live proxy (no DB)
     try {
       const res = await fetch(`${API_BASE_URL}/api/rates/live`, {
         headers: { Accept: 'application/json' },
@@ -11,12 +24,12 @@ export const ratesAPI = {
         const raw = await res.json();
         return normalizeRates(raw);
       }
-      // If 404 (e.g., local dev without serverless), fall through to external fetch
+      // If 404/500, fall through to external fetch
     } catch {
       // Network error; fall back to external with CORS helper
     }
 
-    // Fallback: fetch external via a CORS-friendly wrapper for local development
+    // 3) Fallback: fetch external via a CORS-friendly wrapper for local development
     const externalUrl = encodeURIComponent('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php');
     const corsWrapper = `https://api.allorigins.win/get?url=${externalUrl}`;
 

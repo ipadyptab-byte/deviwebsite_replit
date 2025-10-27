@@ -35,12 +35,12 @@ module.exports = async (req, res) => {
     const cols = await pool.query(`
       SELECT column_name
       FROM information_schema.columns
-      WHERE table_name = 'rates'
+      WHERE table_name = 'gold_rates'
       ORDER BY ordinal_position
     `);
 
     // Sample data
-    const sample = await pool.query(`SELECT * FROM rates ORDER BY 1 DESC LIMIT 3`);
+    const sample = await pool.query(`SELECT * FROM gold_rates ORDER BY 1 DESC LIMIT 3`);
 
     res.setHeader('Content-Type', 'application/json');
     return res

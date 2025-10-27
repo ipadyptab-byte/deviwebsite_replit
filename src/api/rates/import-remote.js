@@ -1,26 +1,17 @@
 /**
- * Vercel Serverless Function: Import rates from a remote Postgres into Vercel Postgres
- * POST /api/rates/import-remote
- *
- * Env:
- * - DATABASE_URL: target Vercel Postgres (required)
- * - REMOTE_DATABASE_URL: source Postgres (required) — if not set, request will fail
- *
- * Behavior:
- * - Reads the latest row from source.rates ordered by updated_at desc
- * - Upserts it into target.rates (updates first row if exists, otherwise inserts)
+ * Import the latest row from remote public.gold_rates into Vercel (Neon) Postgres
  */
-const { Pool } = require('pg');
-const { drizzle } = require('drizzle-orm/node-postgres');
-const { eq } = require('drizzle-orm');
+const { Pool } = require("pg");
+const { drizzle } = require("drizzle-orm/node-postgres");
+const { eq } = require("drizzle-orm");
 
-const { rates } = require('../../shared/schema.js');
+// your drizzle schema file for Neon
+const { rates } = require("../../shared/schema.js");
 
-let targetDb = null;
+let targetDb;
 function getTargetDb() {
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL must be set');
-  }
+  if (!process.env.DATABASE_URL)
+    throw new Error("DATABASE_URL must be set");
   if (!targetDb) {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
@@ -33,76 +24,72 @@ function getTargetDb() {
 
 function getRemoteClient() {
   const remoteUrl = process.env.REMOTE_DATABASE_URL;
-  if (!remoteUrl) {
-    throw new Error('REMOTE_DATABASE_URL must be set to import from remote DB');
-  }
+  if (!remoteUrl)
+    throw new Error("REMOTE_DATABASE_URL must be set");
   return new Pool({
     connectionString: remoteUrl,
-    ssl: false, // remote appears to be a direct IP; disable SSL
+    ssl: false,
   });
 }
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
   let remotePool;
   try {
-    const database = getTargetDb();
+    const db = getTargetDb();
     remotePool = getRemoteClient();
 
-    // Try to fetch latest row from remote 'rates' table
-    // Be defensive with column names (snake_case expected)
+    // ✅ match your gold_rates table columns
     const { rows } = await remotePool.query(`
-  SELECT
-    gold_24k_sale AS vedhani,
-    gold_22k_sale AS ornaments22k,
-    gold_18k_sale AS ornaments18k,
-    silver_per_kg_sale AS silver,
-    created_date AS updated_at
-  FROM gold_rates
-  WHERE is_active = true
-  ORDER BY created_date DESC
-  LIMIT 1
-`);
-    if (!rows || rows.length === 0) {
-      res.setHeader('Content-Type', 'application/json');
-      return res.status(404).end(JSON.stringify({ error: 'No rates found in remote database' }));
-    }
+      SELECT
+        gold_24k_sale  AS vedhani,
+        gold_22k_sale  AS ornaments22k,
+        gold_18k_sale  AS ornaments18k,
+        silver_per_kg_sale AS silver,
+        created_date   AS updated_at
+      FROM gold_rates
+      WHERE is_active = true
+      ORDER BY created_date DESC
+      LIMIT 1;
+    `);
 
-    const latest = rows[0] || {};
+    if (!rows || rows.length === 0)
+      return res.status(404).json({ error: "No active gold_rates rows found" });
+
+    const r = rows[0];
     const payload = {
-      vedhani: latest.vedhani ?? latest.vedhani || '',
-      ornaments22k: latest.ornaments22k ?? latest.ornaments22k || '',
-      ornaments18k: latest.ornaments18k ?? latest.ornaments18k || '',
-      silver: latest.silver ?? latest.silver || '',
-      updatedAt: latest.updated_at ? new Date(latest.updated_at) : new Date(),
+      vedhani: r.vedhani?.toString() ?? "",
+      ornaments22k: r.ornaments22k?.toString() ?? "",
+      ornaments18k: r.ornaments18k?.toString() ?? "",
+      silver: r.silver?.toString() ?? "",
+      updatedAt: r.updated_at ? new Date(r.updated_at) : new Date(),
     };
 
-    // Upsert into target
-    const existing = await database.select().from(rates).limit(1);
+    // Upsert into Neon
+    const existing = await db.select().from(rates).limit(1);
     let result;
     if (existing.length > 0) {
-      result = await database.update(rates)
+      result = await db
+        .update(rates)
         .set(payload)
         .where(eq(rates.id, existing[0].id))
         .returning();
     } else {
-      result = await database.insert(rates).values(payload).returning();
+      result = await db.insert(rates).values(payload).returning();
     }
 
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(200).end(JSON.stringify({ status: 'ok', imported: result[0] }));
-  } catch (error) {
-    console.error('Error importing rates from remote DB:', error);
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(500).end(JSON.stringify({ error: 'Failed to import from remote DB', details: String(error) }));
+    return res.status(200).json({ status: "ok", imported: result[0] });
+  } catch (err) {
+    console.error("import-remote error:", err);
+    return res.status(500).json({
+      error: "Failed to import from remote DB",
+      details: String(err),
+    });
   } finally {
-    if (remotePool) {
-      try { await remotePool.end(); } catch (_) {}
-    }
+    if (remotePool) await remotePool.end().catch(() => {});
   }
 };

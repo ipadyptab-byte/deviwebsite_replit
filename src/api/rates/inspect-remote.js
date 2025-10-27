@@ -14,9 +14,15 @@ function getRemoteClient() {
   if (!remoteUrl) {
     throw new Error('REMOTE_DATABASE_URL must be set to inspect remote DB');
   }
+  const sslPref = (process.env.REMOTE_DATABASE_SSL || "require").toLowerCase();
+  const ssl =
+    sslPref === "disable" || sslPref === "false" || sslPref === "0"
+      ? false
+      : { rejectUnauthorized: false };
+
   return new Pool({
     connectionString: remoteUrl,
-    ssl: false,
+    ssl,
   });
 }
 

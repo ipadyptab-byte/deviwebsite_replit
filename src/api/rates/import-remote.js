@@ -6,7 +6,7 @@ const { drizzle } = require("drizzle-orm/node-postgres");
 const { eq } = require("drizzle-orm");
 
 // your drizzle schema file for Neon
-const { rates } = require("../../shared/schema.js");
+const { rates } = require("../../../shared/schema.js");
 
 let targetDb;
 function getTargetDb() {
@@ -24,17 +24,41 @@ function getTargetDb() {
 
 function getRemoteClient() {
   const remoteUrl = process.env.REMOTE_DATABASE_URL;
-  if (!remoteUrl)
-    throw new Error("REMOTE_DATABASE_URL must be set");
+  if (!remoteUrl) throw new Error("REMOTE_DATABASE_URL must be set");
+
+  // Prefer SSL unless explicitly disabled
+  const sslPref =
+    (process.env.REMOTE_DATABASE_SSL || "require").toLowerCase();
+
+  let ssl;
+  if (sslPref === "disable" || sslPref === "false" || sslPref === "0") {
+    ssl = false;
+  } else {
+    // Works for most managed Postgres (RDS, DigitalOcean, Railway, etc.)
+    ssl = { rejectUnauthorized: false };
+  }
+
   return new Pool({
     connectionString: remoteUrl,
-    ssl: false,
+    ssl,
   });
 }
 
 module.exports = async (req, res) => {
+  if (req.method === "GET") {
+    // Lightweight health/status check to debug env on Vercel
+    const status = {
+      hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
+      hasRemoteUrl: Boolean(process.env.REMOTE_DATABASE_URL),
+      remoteSsl: (process.env.REMOTE_DATABASE_SSL || "require").toLowerCase(),
+      node: process.version,
+    };
+    res.setHeader("Content-Type", "application/json");
+    return res.status(200).end(JSON.stringify({ status }));
+  }
+
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
+    res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 

@@ -22,7 +22,7 @@ function getDb() {
   return db;
 }
 
-const { rates } = require('../../shared/schema.js');
+const { rates } = require('../../../shared/schema.js');
 
 module.exports = async (req, res) => {
   try {

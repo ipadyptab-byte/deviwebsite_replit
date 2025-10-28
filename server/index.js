@@ -1,9 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+require('dotenv').config();
 const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
-const { eq, desc } = require('drizzle-orm');
+const {le-orm');
 // node-fetch via dynamic import for environments without global fetch
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
@@ -191,6 +192,74 @@ if (!process.env.DATABASE_URL) {
       res.status(500).json({ error: 'Failed to save image' });
     }
   });
+
+  // Background sync from remote Postgres (gold_rates -> local rates)
+  if (process.env.REMOTE_DATABASE_URL) {
+    const remotePool = new Pool({
+      connectionString: process.env.REMOTE_DATABASE_URL,
+      ssl: false,
+    });
+
+    const runRemoteSync = async () => {
+      try {
+        // Pull latest active gold_rates row from remote
+        const { rows } = await remotePool.query(`
+          SELECT
+            gold_24k_sale           AS vedhani,
+            gold_22k_sale           AS ornaments22k,
+            gold_18k_sale           AS ornaments18k,
+            silver_per_kg_sale      AS silver,
+            created_date            AS updated_at
+          FROM gold_rates
+          WHERE is_active = true
+          ORDER BY created_date DESC
+          LIMIT 1;
+        `);
+
+        if (!rows || rows.length === 0) {
+          return;
+        }
+
+        const r = rows[0];
+        const remotePayload = {
+          vedhani: r.vedhani?.toString() ?? '',
+          ornaments22k: r.ornaments22k?.toString() ?? '',
+          ornaments18k: r.ornaments18k?.toString() ?? '',
+          silver: r.silver?.toString() ?? '',
+          updatedAt: r.updated_at ? new Date(r.updated_at) : new Date(),
+        };
+
+        const existing = await db.select().from(rates).limit(1);
+        const shouldUpdate =
+          existing.length === 0 ||
+          existing[0].vedhani !== remotePayload.vedhani ||
+          existing[0].ornaments22k !== remotePayload.ornaments22k ||
+          existing[0].ornaments18k !== remotePayload.ornaments18k ||
+          existing[0].silver !== remotePayload.silver;
+
+        if (shouldUpdate) {
+          if (existing.length > 0) {
+            await db
+              .update(rates)
+              .set(remotePayload)
+              .where(eq(rates.id, existing[0].id))
+              .returning();
+          } else {
+            await db.insert(rates).values(remotePayload).returning();
+          }
+          console.log('Rates synced from remote at', new Date().toISOString());
+        }
+      } catch (err) {
+        console.error('Background remote sync failed:', err);
+      }
+    };
+
+    // Run at startup and then every minute
+    runRemoteSync().catch(() => {});
+    setInterval(runRemoteSync, 60_000);
+  } else {
+    console.warn('REMOTE_DATABASE_URL not set; background remote sync disabled.');
+  }
 }
 
 // Serve the React build as static files (single-service deployment)

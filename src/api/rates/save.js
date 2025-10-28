@@ -1,13 +1,9 @@
 import { Pool } from 'pg';
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
-// Your Neon database connection (from Vercel Environment Variable)
 const DB_URL = process.env.DATABASE_URL;
-
-// Source API — your live rates endpoint
 const SOURCE_URL = 'https://www.devi-jewellers.com/api/rates/live';
 
-// PostgreSQL connection
 function getPool() {
   return new Pool({
     connectionString: DB_URL,
@@ -15,7 +11,6 @@ function getPool() {
   });
 }
 
-// Create the table if it doesn't exist
 async function ensureTable(pool) {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS rates_history (
@@ -30,7 +25,6 @@ async function ensureTable(pool) {
   `);
 }
 
-// Fetch JSON data from your own API
 async function fetchLiveRates() {
   const res = await fetch(SOURCE_URL);
   if (!res.ok) throw new Error(`Failed to fetch rates: ${res.statusText}`);
@@ -45,7 +39,6 @@ async function fetchLiveRates() {
   };
 }
 
-// Insert new record into the table
 async function insertRates(pool, payload) {
   await pool.query(
     `
@@ -63,7 +56,6 @@ async function insertRates(pool, payload) {
   );
 }
 
-// Main handler (Serverless Function)
 export default async function handler(req, res) {
   const pool = getPool();
   try {

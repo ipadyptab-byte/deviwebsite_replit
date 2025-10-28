@@ -32,17 +32,46 @@ function getTargetDb() {
   return { db: drizzle(pool), pool };
 }
 
+function normalizeRemoteUrl(url) {
+  try {
+    const u = new URL(url);
+    if (!u.searchParams.has('sslmode')) {
+      u.searchParams.set('sslmode', 'disable');
+    }
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 function getRemotePool() {
+  const raw = process.env.REMOTE_DATABASE_URL;
+  const remoteUrl = normalizeRemoteUrl(raw);
   return new Pool({
-    connectionString: process.env.REMOTE_DATABASE_URL,
-    ssl: false,
+    connectionString: remoteUrl,
+    ssl: false, // explicit: remote server does not support SSL
   });
+}
+
+async function ensureRatesTable(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS rates (
+      id SERIAL PRIMARY KEY,
+      vedhani TEXT NOT NULL,
+      ornaments22k TEXT NOT NULL,
+      ornaments18k TEXT NOT NULL,
+      silver TEXT NOT NULL,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+  `);
 }
 
 async function run() {
   ensureEnv();
 
   const { db, pool: targetPool } = getTargetDb();
+  await ensureRatesTable(targetPool);
+
   const remotePool = getRemotePool();
 
   try {

@@ -34,28 +34,25 @@ async function ensureRatesTable(pool) {
   `);
 }
 
-function normalizeRemoteUrl(url) {
-  try {
-    const u = new URL(url);
-    // If no sslmode provided, force disable to avoid SSL attempts on non-SSL servers
-    if (!u.searchParams.has("sslmode")) {
-      u.searchParams.set("sslmode", "disable");
-    }
-    return u.toString();
-  } catch {
-    return url; // fallback
-  }
+function parsePgUrl(raw) {
+  const u = new URL(raw);
+  const [user, password] = (u.username || u.password) ? [decodeURIComponent(u.username), decodeURIComponent(u.password)] : [undefined, undefined];
+  const database = u.pathname.replace(/^\//, '') || undefined;
+  return {
+    host: u.hostname,
+    port: u.port ? Number(u.port) : 5432,
+    user,
+    password,
+    database,
+  };
 }
 
 function getRemoteClient() {
   const raw = process.env.REMOTE_DATABASE_URL;
   if (!raw) throw new Error("REMOTE_DATABASE_URL must be set");
-  const remoteUrl = normalizeRemoteUrl(raw);
-  return new Pool({
-    connectionString: remoteUrl,
-    // Explicitly turn off SSL for the remote since it reports "server does not support SSL connections"
-    ssl: false,
-  });
+  // Build explicit connection params with ssl disabled to avoid pg enabling SSL implicitly
+  const cfg = parsePgUrl(raw);
+  return new Pool({ ...cfg, ssl: false });
 }
 
 module.exports = async (req, res) => {
@@ -111,10 +108,9 @@ module.exports = async (req, res) => {
     return res.status(200).json({ status: "ok", imported: result[0] });
   } catch (err) {
     console.error("import-remote error:", err);
-    // Try to indicate if this was remote or target failure by message hint
     const hint =
-      String(err).includes("ssl") || String(err).includes("SSL")
-        ? "Remote DB appears to reject SSL; ensured sslmode=disable and ssl:false"
+      String(err).toLowerCase().includes("ssl")
+        ? "Remote DB rejects SSL. We now force ssl: false by using explicit connection params. Ensure REMOTE_DATABASE_URL does NOT include ssl=true."
         : undefined;
     return res.status(500).json({
       error: "Failed to import from remote DB",

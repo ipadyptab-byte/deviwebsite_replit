@@ -32,25 +32,24 @@ function getTargetDb() {
   return { db: drizzle(pool), pool };
 }
 
-function normalizeRemoteUrl(url) {
-  try {
-    const u = new URL(url);
-    if (!u.searchParams.has('sslmode')) {
-      u.searchParams.set('sslmode', 'disable');
-    }
-    return u.toString();
-  } catch {
-    return url;
-  }
+function parsePgUrl(raw) {
+  const u = new URL(raw);
+  const [user, password] = (u.username || u.password) ? [decodeURIComponent(u.username), decodeURIComponent(u.password)] : [undefined, undefined];
+  const database = u.pathname.replace(/^\//, '') || undefined;
+  return {
+    host: u.hostname,
+    port: u.port ? Number(u.port) : 5432,
+    user,
+    password,
+    database,
+  };
 }
 
 function getRemotePool() {
   const raw = process.env.REMOTE_DATABASE_URL;
-  const remoteUrl = normalizeRemoteUrl(raw);
-  return new Pool({
-    connectionString: remoteUrl,
-    ssl: false, // explicit: remote server does not support SSL
-  });
+  const cfg = parsePgUrl(raw);
+  // Explicitly disable SSL by passing discrete params (pg won't infer SSL)
+  return new Pool({ ...cfg, ssl: false });
 }
 
 async function ensureRatesTable(pool) {

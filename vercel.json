@@ -21,6 +21,10 @@
     {
       "src": "src/api/rates/live.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/save.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -28,7 +32,13 @@
     { "src": "/api/rates/import-remote", "dest": "/src/api/rates/import-remote.js" },
     { "src": "/api/rates/diagnostics", "dest": "/src/api/rates/diagnostics.js" },
     { "src": "/api/rates/live", "dest": "/src/api/rates/live.js" },
+    { "src": "/api/rates/save", "dest": "/src/api/rates/save.js" },
     { "src": "/(.*)", "dest": "/build/$1" }
+  ],
+  "crons": [
+    {
+      "path": "/api/rates/save",
+      "schedule": "0 * * * *"
+    }
   ]
 }
-

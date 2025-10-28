@@ -21,6 +21,18 @@
     {
       "src": "src/api/rates/live.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/images/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/images/latest.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -28,6 +40,9 @@
     { "src": "/api/rates/import-remote", "dest": "/src/api/rates/import-remote.js" },
     { "src": "/api/rates/diagnostics", "dest": "/src/api/rates/diagnostics.js" },
     { "src": "/api/rates/live", "dest": "/src/api/rates/live.js" },
+    { "src": "/api/rates", "dest": "/src/api/rates/index.js" },
+    { "src": "/api/images", "dest": "/src/api/images/index.js" },
+    { "src": "/api/images/latest", "dest": "/src/api/images/latest.js" },
     { "src": "/(.*)", "dest": "/build/$1" }
   ]
 }

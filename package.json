@@ -42,7 +42,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "sync:businessmantra": "node server/fetch-and-store.js"
+    "sync:businessmantra": "node server/fetch-and-store.js",
+    "check:businessmantra": "node server/check-rates.js"
   },
   "eslintConfig": {
     "extends": [

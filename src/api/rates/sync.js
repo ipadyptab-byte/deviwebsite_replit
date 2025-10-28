@@ -21,7 +21,8 @@ function getDb() {
   return db;
 }
 
-const { rates } = require('../../shared/schema.js');
+// NOTE: serverless functions are under src/api/... so we need to go up three levels to project root
+const { rates } = require('../../../shared/schema.js');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {

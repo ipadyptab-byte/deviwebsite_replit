@@ -4,8 +4,8 @@
 const { Pool } = require("pg");
 const { drizzle } = require("drizzle-orm/node-postgres");
 const { eq } = require("drizzle-orm");
+const { parse } = require("pg-connection-string"); // ✅ Added to fully control SSL parsing
 
-// NOTE: serverless functions are under src/api/... so we need to go up three levels to project root
 const { rates } = require("../../../shared/schema.js");
 
 let target = null;
@@ -14,7 +14,7 @@ function getTarget() {
   if (!target) {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
+      ssl: { rejectUnauthorized: false }, // Neon requires SSL
     });
     target = { db: drizzle(pool), pool };
   }
@@ -34,28 +34,17 @@ async function ensureRatesTable(pool) {
   `);
 }
 
-function normalizeRemoteUrl(url) {
-  try {
-    const u = new URL(url);
-    // If no sslmode provided, force disable to avoid SSL attempts on non-SSL servers
-    if (!u.searchParams.has("sslmode")) {
-      u.searchParams.set("sslmode", "disable");
-    }
-    return u.toString();
-  } catch {
-    return url; // fallback
-  }
-}
-
+// ✅ Completely disable SSL for remote DB, overriding any env settings
 function getRemoteClient() {
   const raw = process.env.REMOTE_DATABASE_URL;
   if (!raw) throw new Error("REMOTE_DATABASE_URL must be set");
-  const remoteUrl = normalizeRemoteUrl(raw);
-  return new Pool({
-    connectionString: remoteUrl,
-    // Explicitly turn off SSL for the remote since it reports "server does not support SSL connections"
-    ssl: false,
-  });
+
+  // Parse and rebuild config without SSL
+  const cfg = parse(raw);
+  cfg.ssl = false;
+
+  console.log("Connecting to remote DB:", cfg.host, cfg.port, "(SSL disabled)");
+  return new Pool(cfg);
 }
 
 module.exports = async (req, res) => {
@@ -111,10 +100,10 @@ module.exports = async (req, res) => {
     return res.status(200).json({ status: "ok", imported: result[0] });
   } catch (err) {
     console.error("import-remote error:", err);
-    // Try to indicate if this was remote or target failure by message hint
     const hint =
-      String(err).includes("ssl") || String(err).includes("SSL")
-        ? "Remote DB appears to reject SSL; ensured sslmode=disable and ssl:false"
+      String(err).toLowerCase().includes("ssl") ||
+      String(err).toLowerCase().includes("tls")
+        ? "Remote DB explicitly rejects SSL; this build forces ssl:false"
         : undefined;
     return res.status(500).json({
       error: "Failed to import from remote DB",

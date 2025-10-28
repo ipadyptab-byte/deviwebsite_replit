@@ -6,7 +6,8 @@ const { drizzle } = require("drizzle-orm/node-postgres");
 const { eq } = require("drizzle-orm");
 
 // your drizzle schema file for Neon
-const { rates } = require("../../shared/schema.js");
+// NOTE: serverless functions are under src/api/... so we need to go up three levels to project root
+const { rates } = require("../../../shared/schema.js");
 
 let targetDb;
 function getTargetDb() {

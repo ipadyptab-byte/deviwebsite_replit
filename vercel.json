@@ -13,11 +13,16 @@
     {
       "src": "src/api/rates/import-remote.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/diagnostics.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     { "src": "/api/rates/inspect-remote", "dest": "/src/api/rates/inspect-remote.js" },
     { "src": "/api/rates/import-remote", "dest": "/src/api/rates/import-remote.js" },
+    { "src": "/api/rates/diagnostics", "dest": "/src/api/rates/diagnostics.js" },
     { "src": "/(.*)", "dest": "/build/$1" }
   ]
 }

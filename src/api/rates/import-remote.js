@@ -5,28 +5,38 @@ const { Pool } = require("pg");
 const { drizzle } = require("drizzle-orm/node-postgres");
 const { eq } = require("drizzle-orm");
 
-// your drizzle schema file for Neon
 // NOTE: serverless functions are under src/api/... so we need to go up three levels to project root
 const { rates } = require("../../../shared/schema.js");
 
-let targetDb;
-function getTargetDb() {
-  if (!process.env.DATABASE_URL)
-    throw new Error("DATABASE_URL must be set");
-  if (!targetDb) {
+let target = null;
+function getTarget() {
+  if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL must be set");
+  if (!target) {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
     });
-    targetDb = drizzle(pool);
+    target = { db: drizzle(pool), pool };
   }
-  return targetDb;
+  return target;
+}
+
+async function ensureRatesTable(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS rates (
+      id SERIAL PRIMARY KEY,
+      vedhani TEXT NOT NULL,
+      ornaments22k TEXT NOT NULL,
+      ornaments18k TEXT NOT NULL,
+      silver TEXT NOT NULL,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+  `);
 }
 
 function getRemoteClient() {
   const remoteUrl = process.env.REMOTE_DATABASE_URL;
-  if (!remoteUrl)
-    throw new Error("REMOTE_DATABASE_URL must be set");
+  if (!remoteUrl) throw new Error("REMOTE_DATABASE_URL must be set");
   return new Pool({
     connectionString: remoteUrl,
     ssl: false,
@@ -34,7 +44,6 @@ function getRemoteClient() {
 }
 
 module.exports = async (req, res) => {
-  // Accept both POST and GET to make triggering easier
   if (req.method !== "POST" && req.method !== "GET") {
     res.setHeader("Allow", "GET, POST");
     return res.status(405).json({ error: "Method Not Allowed" });
@@ -42,10 +51,11 @@ module.exports = async (req, res) => {
 
   let remotePool;
   try {
-    const db = getTargetDb();
+    const { db, pool } = getTarget();
+    await ensureRatesTable(pool);
+
     remotePool = getRemoteClient();
 
-    // ✅ match your gold_rates table columns
     const { rows } = await remotePool.query(`
       SELECT
         gold_24k_sale  AS vedhani,
@@ -71,7 +81,6 @@ module.exports = async (req, res) => {
       updatedAt: r.updated_at ? new Date(r.updated_at) : new Date(),
     };
 
-    // Upsert into Neon
     const existing = await db.select().from(rates).limit(1);
     let result;
     if (existing.length > 0) {

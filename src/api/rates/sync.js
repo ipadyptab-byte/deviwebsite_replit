@@ -6,19 +6,34 @@ const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
 const { eq } = require('drizzle-orm');
 
-let db = null;
-function getDb() {
+// Return both drizzle db and underlying pool
+let target = null;
+function getTarget() {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL must be set');
   }
-  if (!db) {
+  if (!target) {
     const pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false },
     });
-    db = drizzle(pool);
+    target = { db: drizzle(pool), pool };
   }
-  return db;
+  return target;
+}
+
+// Ensure table exists before upsert
+async function ensureRatesTable(pool) {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS rates (
+      id SERIAL PRIMARY KEY,
+      vedhani TEXT NOT NULL,
+      ornaments22k TEXT NOT NULL,
+      ornaments18k TEXT NOT NULL,
+      silver TEXT NOT NULL,
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+  `);
 }
 
 // NOTE: serverless functions are under src/api/... so we need to go up three levels to project root
@@ -32,7 +47,8 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const database = getDb();
+    const { db, pool } = getTarget();
+    await ensureRatesTable(pool);
 
     const doFetch = async (url, options) => {
       if (typeof fetch === 'function') {
@@ -75,15 +91,15 @@ module.exports = async (req, res) => {
       updatedAt: new Date(),
     };
 
-    const existingRates = await database.select().from(rates).limit(1);
+    const existingRates = await db.select().from(rates).limit(1);
     let result;
     if (existingRates.length > 0) {
-      result = await database.update(rates)
+      result = await db.update(rates)
         .set(payload)
         .where(eq(rates.id, existingRates[0].id))
         .returning();
     } else {
-      result = await database.insert(rates).values(payload).returning();
+      result = await db.insert(rates).values(payload).returning();
     }
 
     res.setHeader('Content-Type', 'application/json');

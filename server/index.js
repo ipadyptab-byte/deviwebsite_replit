@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
-const {le-orm');
+const { eq, desc } = require('drizzle-orm');
 // node-fetch via dynamic import for environments without global fetch
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 

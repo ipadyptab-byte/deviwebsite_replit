@@ -1,6 +1,6 @@
 /**
  * Vercel Serverless Function: Sync live rates into DB
- * POST /api/rates/sync
+ * Supports GET and POST at /api/rates/sync
  */
 const { Pool } = require('pg');
 const { drizzle } = require('drizzle-orm/node-postgres');
@@ -40,8 +40,8 @@ async function ensureRatesTable(pool) {
 const { rates } = require('../../../shared/schema.js');
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
+  if (req.method !== 'POST' && req.method !== 'GET') {
+    res.setHeader('Allow', 'GET, POST');
     res.setHeader('Content-Type', 'application/json');
     return res.status(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
   }

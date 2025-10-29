@@ -1,116 +1,56 @@
-/**
- * Import the latest row from remote public.gold_rates into Vercel (Neon) Postgres
- */
-const { Pool } = require("pg");
-const { drizzle } = require("drizzle-orm/node-postgres");
-const { eq } = require("drizzle-orm");
-const { parse } = require("pg-connection-string"); // ✅ Added to fully control SSL parsing
+import fetch from "node-fetch";
+import { Pool } from "pg";
 
-const { rates } = require("../../../shared/schema.js");
+const dbUrl = "postgresql://neondb_owner:npg_p9MsbmIFeEq6@ep-ancient-sky-adb87hwt-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require";
 
-let target = null;
-function getTarget() {
-  if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL must be set");
-  if (!target) {
-    const pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }, // Neon requires SSL
-    });
-    target = { db: drizzle(pool), pool };
-  }
-  return target;
-}
+const pool = new Pool({
+  connectionString: dbUrl,
+  ssl: { rejectUnauthorized: false },
+});
 
-async function ensureRatesTable(pool) {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS rates (
-      id SERIAL PRIMARY KEY,
-      vedhani TEXT NOT NULL,
-      ornaments22k TEXT NOT NULL,
-      ornaments18k TEXT NOT NULL,
-      silver TEXT NOT NULL,
-      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-    );
-  `);
-}
-
-// ✅ Completely disable SSL for remote DB, overriding any env settings
-function getRemoteClient() {
-  const raw = process.env.REMOTE_DATABASE_URL;
-  if (!raw) throw new Error("REMOTE_DATABASE_URL must be set");
-
-  // Parse and rebuild config without SSL
-  const cfg = parse(raw);
-  cfg.ssl = false;
-
-  console.log("Connecting to remote DB:", cfg.host, cfg.port, "(SSL disabled)");
-  return new Pool(cfg);
-}
-
-module.exports = async (req, res) => {
-  if (req.method !== "POST" && req.method !== "GET") {
-    res.setHeader("Allow", "GET, POST");
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
-  let remotePool;
+export default async function handler(req, res) {
   try {
-    const { db, pool } = getTarget();
-    await ensureRatesTable(pool);
+    // Step 1: Fetch data from API
+    const response = await fetch("https://www.devi-jewellers.com/api/rates/live");
+    const data = await response.json();
 
-    remotePool = getRemoteClient();
+    // Step 2: Prepare SQL insert
+    const {
+      vedhani,
+      ornaments22K,
+      ornaments18K,
+      silver,
+      updatedAt,
+      source
+    } = data;
 
-    const { rows } = await remotePool.query(`
-      SELECT
-        gold_24k_sale  AS vedhani,
-        gold_22k_sale  AS ornaments22k,
-        gold_18k_sale  AS ornaments18k,
-        silver_per_kg_sale AS silver,
-        created_date   AS updated_at
-      FROM gold_rates
-      WHERE is_active = true
-      ORDER BY created_date DESC
-      LIMIT 1;
-    `);
+    // Step 3: Insert into gold_rates
+    const query = `
+      INSERT INTO gold_rates (
+        gold_24k_sale,
+        gold_22k_sale,
+        gold_18k_sale,
+        silver_per_kg_sale,
+        source,
+        created_date,
+        is_active
+      ) VALUES ($1, $2, $3, $4, $5, $6, true)
+    `;
 
-    if (!rows || rows.length === 0)
-      return res.status(404).json({ error: "No active gold_rates rows found" });
+    await pool.query(query, [
+      vedhani,
+      ornaments22K,
+      ornaments18K,
+      silver * 1000, // converting per gram to per kg
+      source + "_api",
+      updatedAt,
+    ]);
 
-    const r = rows[0];
-    const payload = {
-      vedhani: r.vedhani?.toString() ?? "",
-      ornaments22k: r.ornaments22k?.toString() ?? "",
-      ornaments18k: r.ornaments18k?.toString() ?? "",
-      silver: r.silver?.toString() ?? "",
-      updatedAt: r.updated_at ? new Date(r.updated_at) : new Date(),
-    };
-
-    const existing = await db.select().from(rates).limit(1);
-    let result;
-    if (existing.length > 0) {
-      result = await db
-        .update(rates)
-        .set(payload)
-        .where(eq(rates.id, existing[0].id))
-        .returning();
-    } else {
-      result = await db.insert(rates).values(payload).returning();
-    }
-
-    return res.status(200).json({ status: "ok", imported: result[0] });
+    res.status(200).json({ success: true, message: "Inserted successfully", data });
   } catch (err) {
-    console.error("import-remote error:", err);
-    const hint =
-      String(err).toLowerCase().includes("ssl") ||
-      String(err).toLowerCase().includes("tls")
-        ? "Remote DB explicitly rejects SSL; this build forces ssl:false"
-        : undefined;
-    return res.status(500).json({
-      error: "Failed to import from remote DB",
-      details: String(err),
-      hint,
-    });
+    console.error("Error inserting data:", err);
+    res.status(500).json({ success: false, error: err.message });
   } finally {
-    if (remotePool) await remotePool.end().catch(() => {});
+    await pool.end();
   }
-};
+}

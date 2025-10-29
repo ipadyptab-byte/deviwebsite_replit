@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+const { Pool } = require('pg');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const DB_URL = process.env.DATABASE_URL;
@@ -97,23 +97,26 @@ async function insertRates(pool, payload) {
   );
 }
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   const pool = getPool();
   try {
     if (req.method !== 'GET' && req.method !== 'POST') {
       res.setHeader('Allow', 'GET, POST');
-      return res.status(405).json({ error: 'Method Not Allowed' });
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(405).end(JSON.stringify({ error: 'Method Not Allowed' }));
     }
 
     await ensureTable(pool);
     const payload = await fetchLiveRates();
     await insertRates(pool, payload);
 
-    res.status(200).json({ success: true, message: 'Rates saved to gold_rates', payload });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(200).end(JSON.stringify({ success: true, message: 'Rates saved to gold_rates', payload }));
   } catch (err) {
     console.error('Error saving rates:', err);
-    res.status(500).json({ success: false, error: err.message });
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(500).end(JSON.stringify({ success: false, error: err.message }));
   } finally {
     await pool.end();
   }
-}
+};

@@ -51,3 +51,16 @@
     }
   ]
 }
+{
+  "functions": {
+    "api/rates/sync-gold-rates.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/rates/sync-gold-rates",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}

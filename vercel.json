@@ -29,7 +29,7 @@
     {
       "src": "src/api/rates/sync.js",
       "use": "@vercel/node"
-    }
+    },
     {
       "src": "src/api/sync-gold-rates.js",
       "use": "@vercel/node"
@@ -42,9 +42,14 @@
     { "src": "/api/rates/live", "dest": "/src/api/rates/live.js" },
     { "src": "/api/rates/save", "dest": "/src/api/rates/save.js" },
     { "src": "/api/rates/sync", "dest": "/src/api/rates/sync.js" },
-    { "src": "/api/rates/sync", "dest": "/src/api/sync-gold-rates.js" },
+    { "src": "/api/sync-gold-rates", "dest": "/src/api/sync-gold-rates.js" },
     { "src": "/(.*)", "dest": "/build/$1" }
   ],
+  "functions": {
+    "api/sync-gold-rates.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "crons": [
     {
       "path": "/api/rates/save",
@@ -53,16 +58,7 @@
     {
       "path": "/api/rates/sync",
       "schedule": "*/30 * * * *"
-    }
-  ]
-}
-{
-  "functions": {
-    "api/sync-gold-rates.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "crons": [
+    },
     {
       "path": "/api/sync-gold-rates",
       "schedule": "*/5 * * * *"

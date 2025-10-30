@@ -30,6 +30,10 @@
       "src": "src/api/rates/sync.js",
       "use": "@vercel/node"
     }
+    {
+      "src": "api/sync-gold-rates.js",
+      "use": "@vercel/node"
+    }
   ],
   "routes": [
     { "src": "/api/rates/inspect-remote", "dest": "/src/api/rates/inspect-remote.js" },

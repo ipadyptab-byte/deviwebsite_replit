@@ -31,7 +31,7 @@
       "use": "@vercel/node"
     }
     {
-      "src": "api/sync-gold-rates.js",
+      "src": "src/api/sync-gold-rates.js",
       "use": "@vercel/node"
     }
   ],

@@ -1,24 +1,23 @@
-// sync-gold-rates.js
+// api/sync-gold-rates.js
 import pg from "pg";
 
-const localDb = new pg.Pool({
-  connectionString: "postgresql://postgres:mangesh1981@localhost:5432/devitvdisplay",
-});
+export default async function handler(req, res) {
+  const localDb = new pg.Pool({
+    connectionString: process.env.DATABASE_LOCAL,
+  });
 
-const remoteDb = new pg.Pool({
-  connectionString:
-    "postgresql://neondb_owner:npg_p9MsbmIFeEq6@ep-ancient-sky-adb87hwt-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require",
-});
-
-async function syncGoldRates() {
-  console.log("🔄 Starting sync at", new Date().toISOString());
+  const remoteDb = new pg.Pool({
+    connectionString: process.env.DATABASE_REMOTE,
+  });
 
   try {
-    // Fetch latest rows from local DB
-    const localData = await localDb.query("SELECT * FROM gold_rates ORDER BY created_date DESC LIMIT 10");
+    console.log("🔄 Starting sync at", new Date().toISOString());
+
+    const localData = await localDb.query(
+      "SELECT * FROM gold_rates ORDER BY created_date DESC LIMIT 10"
+    );
 
     for (const row of localData.rows) {
-      // Upsert (insert or update) into Neon DB
       await remoteDb.query(
         `
         INSERT INTO gold_rates (
@@ -61,12 +60,12 @@ async function syncGoldRates() {
     }
 
     console.log(`✅ Synced ${localData.rowCount} rows successfully.`);
+    res.status(200).json({ success: true, rows: localData.rowCount });
   } catch (err) {
     console.error("❌ Sync failed:", err);
+    res.status(500).json({ success: false, error: err.message });
   } finally {
     await localDb.end();
     await remoteDb.end();
   }
 }
-
-syncGoldRates();

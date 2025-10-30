@@ -38,7 +38,7 @@
     { "src": "/api/rates/live", "dest": "/src/api/rates/live.js" },
     { "src": "/api/rates/save", "dest": "/src/api/rates/save.js" },
     { "src": "/api/rates/sync", "dest": "/src/api/rates/sync.js" },
-    { "src": "/api/rates/sync", "dest": "/src/api/rates/sync-gold-rates.js" },
+    { "src": "/api/rates/sync", "dest": "/src/api/sync-gold-rates.js" },
     { "src": "/(.*)", "dest": "/build/$1" }
   ],
   "crons": [
@@ -54,13 +54,13 @@
 }
 {
   "functions": {
-    "api/rates/sync-gold-rates.js": {
+    "api/sync-gold-rates.js": {
       "runtime": "nodejs20.x"
     }
   },
   "crons": [
     {
-      "path": "/api/rates/sync-gold-rates",
+      "path": "/api/sync-gold-rates",
       "schedule": "*/5 * * * *"
     }
   ]

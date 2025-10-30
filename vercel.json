@@ -61,7 +61,7 @@
   "crons": [
     {
       "path": "/api/rates/sync-gold-rates",
-      "schedule": "*/30 * * * *"
+      "schedule": "*/5 * * * *"
     }
   ]
 }

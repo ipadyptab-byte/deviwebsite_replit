@@ -65,6 +65,19 @@ export const ratesAPI = {
     }
     return response.json();
   },
+
+  async syncFromLive() {
+    const response = await fetch(`${API_BASE_URL}/api/rates/sync`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Failed to sync rates from live');
+    }
+    return response.json();
+  },
 };
 
 function normalizeRates(raw) {

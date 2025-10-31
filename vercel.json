@@ -61,11 +61,5 @@
     "api/sync-gold-rates.js": {
       "runtime": "nodejs20.x"
     }
-  },
-  "crons": [
-    {
-      "path": "/api/sync-gold-rates",
-      "schedule": "*/5 * * * *"
-    }
-  ]
-}
+  }
+  

@@ -1,0 +1,71 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    },
+    {
+      "src": "src/api/rates/inspect-remote.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/import-remote.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/diagnostics.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/live.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/save.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/rates/sync.js",
+      "use": "@vercel/node"
+    }
+    {
+      "src": "src/api/sync-gold-rates.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/api/rates/inspect-remote", "dest": "/src/api/rates/inspect-remote.js" },
+    { "src": "/api/rates/import-remote", "dest": "/src/api/rates/import-remote.js" },
+    { "src": "/api/rates/diagnostics", "dest": "/src/api/rates/diagnostics.js" },
+    { "src": "/api/rates/live", "dest": "/src/api/rates/live.js" },
+    { "src": "/api/rates/save", "dest": "/src/api/rates/save.js" },
+    { "src": "/api/rates/sync", "dest": "/src/api/rates/sync.js" },
+    { "src": "/api/rates/sync", "dest": "/src/api/sync-gold-rates.js" },
+    { "src": "/(.*)", "dest": "/build/$1" }
+  ],
+  "crons": [
+    {
+      "path": "/api/rates/save",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/rates/sync",
+      "schedule": "*/30 * * * *"
+    }
+  ]
+}
+{
+  "functions": {
+    "api/sync-gold-rates.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/sync-gold-rates",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}

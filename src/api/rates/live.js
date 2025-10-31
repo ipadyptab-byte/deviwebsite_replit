@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
       return mod.default(url, options);
     };
 
-    const response = await doFetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+    const response = await doFetch('https://www.devi-jewellers.com/api/rates/live', {
       headers: { Accept: 'application/json' },
     });
 

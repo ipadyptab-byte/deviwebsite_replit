@@ -68,12 +68,15 @@ export const ratesAPI = {
 };
 
 function normalizeRates(raw) {
-  return {
-    vedhani: raw.vedhani ?? raw['24K Gold'] ?? '',
-    ornaments22k: raw.ornaments22k ?? raw.ornaments22K ?? raw['22K Gold'] ?? '',
-    ornaments18k: raw.ornaments18k ?? raw.ornaments18K ?? raw['18K Gold'] ?? '',
-    silver: raw.silver ?? raw['Silver'] ?? '',
-  };
+  // Prefer DB/server fields when available, else map external
+  const vedhani = raw.vedhani ?? raw['24K Gold'] ?? '';
+  const ornaments22k = raw.ornaments22k ?? raw.ornaments22K ?? raw['22K Gold'] ?? '';
+  const ornaments18k = raw.ornaments18k ?? raw.ornaments18K ?? raw['18K Gold'] ?? '';
+  const silver = raw.silver ?? raw['Silver'] ?? '';
+  const updatedAt = raw.updatedAt ?? raw.updated_at ?? new Date().toISOString();
+  const source = raw.source ?? 'unknown';
+
+  return { vedhani, ornaments22k, ornaments18k, silver, updatedAt, source };
 }
 
 export const imagesAPI = {

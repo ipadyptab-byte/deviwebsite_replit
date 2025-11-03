@@ -149,6 +149,27 @@ if (!process.env.DATABASE_URL) {
     }
   });
 
+  // Diagnostics: check Neon REST base and attempt to list rates via REST
+  app.get('/api/rates/rest-check', async (req, res) => {
+    try {
+      const base = process.env.NEON_REST_BASE || 'https://ep-ancient-sky-adb87hwt.apirest.c-2.us-east-1.aws.neon.tech/neondb/rest/v1';
+      const token = process.env.NEON_ACCESS_TOKEN || process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY || '';
+      const headers = { Accept: 'application/json' };
+      if (token) headers['X-Stack-Access-Token'] = token;
+
+      const url = `${base}/rates?select=*`;
+      const r = await fetch(url, { headers });
+      const text = await r.text();
+      res.status(r.status).json({ ok: r.ok, status: r.status, statusText: r.statusText, body: tryParseJson(text), url });
+    } catch (err) {
+      res.status(500).json({ ok: false, error: err.message || String(err) });
+    }
+  });
+
+  function tryParseJson(s) {
+    try { return JSON.parse(s); } catch { return s; }
+  }
+
   // Optional Cron-like background sync to Neon REST API (interval in minutes)
   const restIntervalMinutes = Number(process.env.SYNC_REST_INTERVAL_MINUTES || 0);
   if (restIntervalMinutes > 0) {

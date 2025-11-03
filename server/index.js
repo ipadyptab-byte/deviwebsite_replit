@@ -315,16 +315,23 @@ if (!process.env.DATABASE_URL) {
 
 // Serve the React build as static files (single-service deployment)
 const buildPath = path.join(__dirname, '..', 'build');
-app.use(express.static(buildPath));
+const fs = require('fs');
 
-// SPA fallback: send index.html for non-API routes
-app.get('*', (req, res) => {
-  // If the request is for an API route, let previous handlers deal with it
-  if (req.path.startsWith('/api/')) {
-    return res.status(404).json({ error: 'Not found' });
-  }
-  return res.sendFile(path.join(buildPath, 'index.html'));
-});
+if (fs.existsSync(buildPath)) {
+  app.use(express.static(buildPath));
+  
+  // SPA fallback: send index.html for non-API routes
+  app.use((req, res, next) => {
+    // If the request is for an API route, let it 404
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    // Serve index.html for all other routes (SPA routing)
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+} else {
+  console.warn('Build directory not found. Run "npm run build" to create the production build.');
+}
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);

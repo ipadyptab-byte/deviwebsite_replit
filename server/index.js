@@ -77,6 +77,31 @@ function tryParseJson(s) {
 let db = null;
 if (!process.env.DATABASE_URL) {
   console.warn('DATABASE_URL is not set. DB-backed routes (/api/rates, /api/images, etc.) will be disabled. Live rates, sync-rest and rest-check remain available.');
+
+  // Provide a live-backed /api/rates endpoint so pages don't go blank
+  app.get('/api/rates', async (req, res) => {
+    try {
+      const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        return res.status(502).json({ error: 'Failed to fetch external rates' });
+      }
+      const raw = await response.json();
+      return res.json({
+        vedhani: raw['24K Gold'] ?? '',
+        ornaments22k: raw['22K Gold'] ?? '',
+        ornaments18k: raw['18K Gold'] ?? '',
+        silver: raw['Silver'] ?? '',
+        updatedAt: new Date().toISOString(),
+        source: 'businessmantra',
+      });
+    } catch (error) {
+      console.error('Error fetching live-backed /api/rates:', error);
+      return res.status(500).json({ error: 'Failed to fetch rates' });
+    }
+  });
+
 } else {
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,

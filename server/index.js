@@ -38,6 +38,10 @@ app.get('/api/rates/live', async (req, res) => {
   }
 });
 
+// Mount serverless-style handler for saving rates
+const saveRatesHandler = require('../src/api/rates/save.js');
+app.all('/api/rates/save', (req, res) => saveRatesHandler(req, res));
+
 // --- Routes that do NOT require DATABASE_URL (Neon REST diagnostics and trigger) ---
 const { syncNeonRest } = require('./fetch-to-neon-rest');
 

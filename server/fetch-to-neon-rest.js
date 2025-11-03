@@ -53,20 +53,26 @@ async function postToNeonRest(payload) {
   return data;
 }
 
+async function syncNeonRest() {
+  const raw = await fetchRates();
+  const payload = normalizeRates(raw);
+  const inserted = await postToNeonRest(payload);
+  return inserted && inserted[0] ? inserted[0] : inserted;
+}
+
 async function main() {
   try {
     console.log('Fetching live rates from Businessmantra...');
-    const raw = await fetchRates();
-    const payload = normalizeRates(raw);
-    console.log('Payload:', payload);
-
-    console.log('Posting to Neon Data API (REST v1)...');
-    const inserted = await postToNeonRest(payload);
-    console.log('Inserted row:', inserted && inserted[0] ? inserted[0] : inserted);
+    const result = await syncNeonRest();
+    console.log('Inserted row:', result);
   } catch (err) {
     console.error('Failed:', err.message || err);
     process.exitCode = 1;
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = { syncNeonRest };

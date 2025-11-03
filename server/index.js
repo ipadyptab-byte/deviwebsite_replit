@@ -137,6 +137,35 @@ if (!process.env.DATABASE_URL) {
     }
   });
 
+  // Route to trigger Neon REST sync (Businessmantra -> Neon Data API)
+  const { syncNeonRest } = require('./fetch-to-neon-rest');
+  app.post('/api/rates/sync-rest', async (req, res) => {
+    try {
+      const inserted = await syncNeonRest();
+      res.json({ success: true, row: inserted });
+    } catch (err) {
+      console.error('sync-rest failed:', err);
+      res.status(500).json({ success: false, error: err.message || String(err) });
+    }
+  });
+
+  // Optional Cron-like background sync to Neon REST API (interval in minutes)
+  const restIntervalMinutes = Number(process.env.SYNC_REST_INTERVAL_MINUTES || 0);
+  if (restIntervalMinutes > 0) {
+    const runRestSync = async () => {
+      try {
+        const inserted = await syncNeonRest();
+        console.log('Neon REST sync complete at', new Date().toISOString(), 'row:', inserted && inserted.id ? inserted.id : inserted);
+      } catch (err) {
+        console.error('Background REST sync failed:', err);
+      }
+    };
+    // Run once at startup, then at interval
+    runRestSync().catch(() => {});
+    setInterval(runRestSync, Math.max(restIntervalMinutes, 1) * 60_000);
+    console.log(`Background REST sync enabled (every ${Math.max(restIntervalMinutes, 1)} minute(s)).`);
+  }
+
   app.get('/api/images', async (req, res) => {
     try {
       const allImages = await db.select().from(images).orderBy(desc(images.uploadedAt));

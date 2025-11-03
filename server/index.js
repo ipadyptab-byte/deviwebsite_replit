@@ -16,15 +16,31 @@ app.use(express.json());
 
 // Live rates from external provider; normalize to our schema keys
 app.get('/api/rates/live', async (req, res) => {
+  const url = 'https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php';
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), Number(process.env.LIVE_FETCH_TIMEOUT_MS || 8000));
   try {
-    const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
-      headers: { Accept: 'application/json' },
+    const response = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'devi-jewellers-server/1.0',
+      },
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
+    res.setHeader('Content-Type', 'application/json');
     if (!response.ok) {
-      return res.status(502).json({ error: 'Failed to fetch external rates' });
+      return res.status(502).json({ error: 'Failed to fetch external rates', status: response.status, statusText: response.statusText });
     }
-    const raw = await response.json();
-    res.json({
+    const text = await response.text();
+    let raw;
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      // Some providers return text/HTML; return diagnostic to avoid blank page
+      return res.status(502).json({ error: 'External rates response was not valid JSON', sample: text.slice(0, 200) });
+    }
+    return res.status(200).json({
       vedhani: raw['24K Gold'] ?? '',
       ornaments22K: raw['22K Gold'] ?? '',
       ornaments18K: raw['18K Gold'] ?? '',
@@ -33,8 +49,25 @@ app.get('/api/rates/live', async (req, res) => {
       source: 'businessmantra',
     });
   } catch (error) {
+    clearTimeout(timeout);
     console.error('Error fetching live rates:', error);
-    res.status(500).json({ error: 'Failed to fetch live rates' });
+    res.setHeader('Content-Type', 'application/json');
+    const msg = error && error.name === 'AbortError' ? 'Timed out fetching external rates' : 'Failed to fetch live rates';
+    return res.status(500).json({ error: msg });
+  }
+});
+
+// Raw passthrough for diagnostics
+app.get('/api/rates/live/raw', async (req, res) => {
+  const url = 'https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php';
+  try {
+    const response = await fetch(url, { headers: { 'User-Agent': 'devi-jewellers-server/1.0' } });
+    const text = await response.text();
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    return res.status(response.status).send(text);
+  } catch (error) {
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(500).json({ error: 'Failed to fetch raw live rates' });
   }
 });
 
@@ -86,12 +119,14 @@ if (!process.env.DATABASE_URL) {
   app.get('/api/rates', async (req, res) => {
     try {
       const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
-        headers: { Accept: 'application/json' },
+        headers: { Accept: 'application/json', 'User-Agent': 'devi-jewellers-server/1.0' },
       });
       if (!response.ok) {
         return res.status(502).json({ error: 'Failed to fetch external rates' });
       }
-      const raw = await response.json();
+      const text = await response.text();
+      let raw;
+      try { raw = JSON.parse(text); } catch { return res.status(502).json({ error: 'External rates response was not valid JSON', sample: text.slice(0, 200) }); }
       return res.json({
         vedhani: raw['24K Gold'] ?? '',
         ornaments22k: raw['22K Gold'] ?? '',
@@ -169,12 +204,14 @@ if (!process.env.DATABASE_URL) {
   app.post('/api/rates/sync', async (req, res) => {
     try {
       const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
-        headers: { Accept: 'application/json' },
+        headers: { Accept: 'application/json', 'User-Agent': 'devi-jewellers-server/1.0' },
       });
       if (!response.ok) {
         return res.status(502).json({ error: 'Failed to fetch external rates' });
       }
-      const raw = await response.json();
+      const text = await response.text();
+      let raw;
+      try { raw = JSON.parse(text); } catch { return res.status(502).json({ error: 'External rates response was not valid JSON', sample: text.slice(0, 200) }); }
       const payload = {
         vedhani: raw['24K Gold'] ?? '',
         ornaments22k: raw['22K Gold'] ?? '',

@@ -38,10 +38,70 @@ app.get('/api/rates/live', async (req, res) => {
   }
 });
 
+// --- Routes that do NOT require DATABASE_URL (Neon REST diagnostics and trigger) ---
+const { syncNeonRest } = require('./fetch-to-neon-rest');
+
+// Route to trigger Neon REST sync (Businessmantra -> Neon Data API)
+app.post('/api/rates/sync-rest', async (req, res) => {
+  try {
+    const inserted = await syncNeonRest();
+    res.json({ success: true, row: inserted });
+  } catch (err) {
+    console.error('sync-rest failed:', err);
+    res.status(500).json({ success: false, error: err.message || String(err) });
+  }
+});
+
+// Diagnostics: check Neon REST base and attempt to list rates via REST
+app.get('/api/rates/rest-check', async (req, res) => {
+  try {
+    const base = process.env.NEON_REST_BASE || 'https://ep-ancient-sky-adb87hwt.apirest.c-2.us-east-1.aws.neon.tech/neondb/rest/v1';
+    const token = process.env.NEON_ACCESS_TOKEN || process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY || '';
+    const headers = { Accept: 'application/json' };
+    if (token) headers['X-Stack-Access-Token'] = token;
+
+    const url = `${base}/rates?select=*`;
+    const r = await fetch(url, { headers });
+    const text = await r.text();
+    res.status(r.status).json({ ok: r.ok, status: r.status, statusText: r.statusText, body: tryParseJson(text), url });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message || String(err) });
+  }
+});
+
+function tryParseJson(s) {
+  try { return JSON.parse(s); } catch { return s; }
+}
+
 // Database-backed routes are optional; only register if DATABASE_URL is set
 let db = null;
 if (!process.env.DATABASE_URL) {
-  console.warn('DATABASE_URL is not set. DB-backed routes (/api/rates, /api/images, etc.) will be disabled. Live rates remain available at /api/rates/live.');
+  console.warn('DATABASE_URL is not set. DB-backed routes (/api/rates, /api/images, etc.) will be disabled. Live rates, sync-rest and rest-check remain available.');
+
+  // Provide a live-backed /api/rates endpoint so pages don't go blank
+  app.get('/api/rates', async (req, res) => {
+    try {
+      const response = await fetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.ok) {
+        return res.status(502).json({ error: 'Failed to fetch external rates' });
+      }
+      const raw = await response.json();
+      return res.json({
+        vedhani: raw['24K Gold'] ?? '',
+        ornaments22k: raw['22K Gold'] ?? '',
+        ornaments18k: raw['18K Gold'] ?? '',
+        silver: raw['Silver'] ?? '',
+        updatedAt: new Date().toISOString(),
+        source: 'businessmantra',
+      });
+    } catch (error) {
+      console.error('Error fetching live-backed /api/rates:', error);
+      return res.status(500).json({ error: 'Failed to fetch rates' });
+    }
+  });
+
 } else {
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -137,6 +197,23 @@ if (!process.env.DATABASE_URL) {
     }
   });
 
+  // Optional Cron-like background sync to Neon REST API (interval in minutes)
+  const restIntervalMinutes = Number(process.env.SYNC_REST_INTERVAL_MINUTES || 0);
+  if (restIntervalMinutes > 0) {
+    const runRestSync = async () => {
+      try {
+        const inserted = await syncNeonRest();
+        console.log('Neon REST sync complete at', new Date().toISOString(), 'row:', inserted && inserted.id ? inserted.id : inserted);
+      } catch (err) {
+        console.error('Background REST sync failed:', err);
+      }
+    };
+    // Run once at startup, then at interval
+    runRestSync().catch(() => {});
+    setInterval(runRestSync, Math.max(restIntervalMinutes, 1) * 60_000);
+    console.log(`Background REST sync enabled (every ${Math.max(restIntervalMinutes, 1)} minute(s)).`);
+  }
+
   app.get('/api/images', async (req, res) => {
     try {
       const allImages = await db.select().from(images).orderBy(desc(images.uploadedAt));
@@ -160,57 +237,6 @@ if (!process.env.DATABASE_URL) {
       res.status(500).json({ error: 'Failed to fetch latest image' });
     }
   });
-
-  
-    // Route to trigger Neon REST sync (Businessmantra -> Neon Data API)
-  const { syncNeonRest } = require('./fetch-to-neon-rest');
-  app.post('/api/rates/sync-rest', async (req, res) => {
-    try {
-      const inserted = await syncNeonRest();
-      res.json({ success: true, row: inserted });
-    } catch (err) {
-      console.error('sync-rest failed:', err);
-      res.status(500).json({ success: false, error: err.message || String(err) });
-    }
-  });
-
-  // Diagnostics: check Neon REST base and attempt to list rates via REST
-  app.get('/api/rates/rest-check', async (req, res) => {
-    try {
-      const base = process.env.NEON_REST_BASE || 'https://ep-ancient-sky-adb87hwt.apirest.c-2.us-east-1.aws.neon.tech/neondb/rest/v1';
-      const token = process.env.NEON_ACCESS_TOKEN || process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY || '';
-      const headers = { Accept: 'application/json' };
-      if (token) headers['X-Stack-Access-Token'] = token;
-
-      const url = `${base}/rates?select=*`;
-      const r = await fetch(url, { headers });
-      const text = await r.text();
-      res.status(r.status).json({ ok: r.ok, status: r.status, statusText: r.statusText, body: tryParseJson(text), url });
-    } catch (err) {
-      res.status(500).json({ ok: false, error: err.message || String(err) });
-    }
-  });
-
-  function tryParseJson(s) {
-    try { return JSON.parse(s); } catch { return s; }
-  }
-
-  // Optional Cron-like background sync to Neon REST API (interval in minutes)
-  const restIntervalMinutes = Number(process.env.SYNC_REST_INTERVAL_MINUTES || 0);
-  if (restIntervalMinutes > 0) {
-    const runRestSync = async () => {
-      try {
-        const inserted = await syncNeonRest();
-        console.log('Neon REST sync complete at', new Date().toISOString(), 'row:', inserted && inserted.id ? inserted.id : inserted);
-      } catch (err) {
-        console.error('Background REST sync failed:', err);
-      }
-    };
-    // Run once at startup, then at interval
-    runRestSync().catch(() => {});
-    setInterval(runRestSync, Math.max(restIntervalMinutes, 1) * 60_000);
-    console.log(`Background REST sync enabled (every ${Math.max(restIntervalMinutes, 1)} minute(s)).`);
-  }
 
   app.get('/api/images/:category', async (req, res) => {
     try {
@@ -315,23 +341,16 @@ if (!process.env.DATABASE_URL) {
 
 // Serve the React build as static files (single-service deployment)
 const buildPath = path.join(__dirname, '..', 'build');
-const fs = require('fs');
+app.use(express.static(buildPath));
 
-if (fs.existsSync(buildPath)) {
-  app.use(express.static(buildPath));
-  
-  // SPA fallback: send index.html for non-API routes
-  app.use((req, res, next) => {
-    // If the request is for an API route, let it 404
-    if (req.path.startsWith('/api/')) {
-      return res.status(404).json({ error: 'Not found' });
-    }
-    // Serve index.html for all other routes (SPA routing)
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-} else {
-  console.warn('Build directory not found. Run "npm run build" to create the production build.');
-}
+// SPA fallback: send index.html for non-API routes
+app.get('*', (req, res) => {
+  // If the request is for an API route, let previous handlers deal with it
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  return res.sendFile(path.join(buildPath, 'index.html'));
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);

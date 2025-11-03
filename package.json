@@ -24,8 +24,9 @@
     "db:studio": "drizzle-kit studio",
     "sync:businessmantra": "node server/fetch-and-store.js",
     "sync:rest": "node server/fetch-to-neon-rest.js",
-    "sync:all": "npm run sync:businessmantra && npm run sync:rest"  },
-  "dependencies": {
+    "sync:all": "npm run sync:businessmantra && npm run sync:rest"  
+  },
+   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -47,7 +48,7 @@
     "react-slick": "^0.29.0",
     "sass": "^1.64.2",
     "slick-carousel": "^1.8.1",
-    "web-vitals": "^2.1.4",
+    "web-vitals": "^2.1.4"
       },
   "eslintConfig": {
     "extends": [

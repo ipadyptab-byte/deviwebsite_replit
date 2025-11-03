@@ -1,8 +1,24 @@
 const API_BASE_URL = '';
+// Direct Neon REST base for the provided database (public read on rates)
+const NEON_REST_BASE = 'https://ep-ancient-sky-adb87hwt.apirest.c-2.us-east-1.aws.neon.tech/neondb/rest/v1';
 
 export const ratesAPI = {
   async getRates() {
-    // 1) Try DB-backed endpoint first (what we want to show in UI)
+    // 0) Try Neon REST 'rates' table directly (latest row by updated_at or id)
+    try {
+      const url = `${NEON_REST_BASE}/rates?select=*&order=updated_at.desc.nullslast,id.desc&limit=1`;
+      const restRes = await fetch(url, { headers: { Accept: 'application/json' } });
+      if (restRes.ok) {
+        const arr = await restRes.json();
+        if (Array.isArray(arr) && arr.length > 0) {
+          return normalizeRates(arr[0]);
+        }
+      }
+    } catch {
+      // Ignore and fall through
+    }
+
+    // 1) Try DB-backed endpoint (if running our own API)
     try {
       const dbRes = await fetch(`${API_BASE_URL}/api/rates`, {
         headers: { Accept: 'application/json' },
@@ -74,7 +90,7 @@ function normalizeRates(raw) {
   const ornaments18k = raw.ornaments18k ?? raw.ornaments18K ?? raw['18K Gold'] ?? '';
   const silver = raw.silver ?? raw['Silver'] ?? '';
   const updatedAt = raw.updatedAt ?? raw.updated_at ?? new Date().toISOString();
-  const source = raw.source ?? 'unknown';
+  const source = raw.source ?? 'neon-rest';
 
   return { vedhani, ornaments22k, ornaments18k, silver, updatedAt, source };
 }

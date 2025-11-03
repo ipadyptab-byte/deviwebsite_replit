@@ -7,6 +7,10 @@
       "config": { "distDir": "build" }
     },
     {
+      "src": "src/api/ping.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "src/api/rates/inspect-remote.js",
       "use": "@vercel/node"
     },
@@ -36,6 +40,7 @@
     }
   ],
   "routes": [
+    { "src": "/api/ping", "dest": "/src/api/ping.js" },
     { "src": "/api/rates/inspect-remote", "dest": "/src/api/rates/inspect-remote.js" },
     { "src": "/api/rates/import-remote", "dest": "/src/api/rates/import-remote.js" },
     { "src": "/api/rates/diagnostics", "dest": "/src/api/rates/diagnostics.js" },

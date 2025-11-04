@@ -64,6 +64,5 @@
     "api/sync-gold-rates.js": {
       "runtime": "nodejs20.x"
     }
-  }
+  },
 }
-

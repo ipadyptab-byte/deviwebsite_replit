@@ -1,7 +1,35 @@
 {
   "version": 2,
   "builds": [
-    { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "build" } }
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "/build/$1" }]
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/build/$1"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/rates/save",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/sync-gold-rates",
+      "schedule": "*/30 * * * *"
+    }
+  ],
+  "functions": {
+    "api/sync-gold-rates.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
 }

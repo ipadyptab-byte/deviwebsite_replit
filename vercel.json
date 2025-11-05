@@ -10,5 +10,11 @@
     "api/**/*.js": {
       "runtime": "nodejs20.x"
     }
+  },
+  "crons": [
+    {
+      "path": "/api/rates/save",
+      "schedule": "*/15 * * * *"
+    }
   ]
 }

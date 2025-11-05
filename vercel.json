@@ -10,15 +10,4 @@
     "api/**/*.js": {
       "runtime": "nodejs20.x"
     }
-  },
-  "crons": [
-    {
-      "path": "/api/rates/save",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/rates/sync",
-      "schedule": "*/30 * * * *"
-    }
-  ]
-}
+  }

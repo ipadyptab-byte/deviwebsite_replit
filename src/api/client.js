@@ -2,34 +2,37 @@ const API_BASE_URL = '';
 
 export const ratesAPI = {
   async getRates() {
-    // 1) Try DB-backed endpoint first (what we want to show in UI)
+    // Race both DB and live endpoints to get fastest response
+    const promises = [];
+
+    // 1) Try DB-backed endpoint (cached, faster if available)
+    promises.push(
+      fetch(`${API_BASE_URL}/api/rates`, { headers: { Accept: 'application/json' } })
+        .then(res => res.ok ? res.json().then(r => ({ source: 'db', data: r })) : null)
+        .catch(() => null)
+    );
+
+    // 2) Try live proxy (real-time, fallback option)
+    promises.push(
+      fetch(`${API_BASE_URL}/api/rates/live`, { headers: { Accept: 'application/json' } })
+        .then(res => res.ok ? res.json().then(r => ({ source: 'live', data: r })) : null)
+        .catch(() => null)
+    );
+
     try {
-      const dbRes = await fetch(`${API_BASE_URL}/api/rates`, {
-        headers: { Accept: 'application/json' },
-      });
-      if (dbRes.ok) {
-        const row = await dbRes.json();
-        return normalizeRates(row);
+      const results = await Promise.allSettled(promises);
+
+      // Use first successful result
+      for (const result of results) {
+        if (result.status === 'fulfilled' && result.value) {
+          return normalizeRates(result.value.data);
+        }
       }
     } catch {
-      // Ignore and fall through
+      // Continue to fallback
     }
 
-    // 2) Fallback to live proxy (no DB)
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/rates/live`, {
-        headers: { Accept: 'application/json' },
-      });
-      if (res.ok) {
-        const raw = await res.json();
-        return normalizeRates(raw);
-      }
-      // If 404/500, fall through to external fetch
-    } catch {
-      // Network error; fall back to external with CORS helper
-    }
-
-    // 3) Fallback: fetch external via a CORS-friendly wrapper for local development
+    // 3) Fallback: fetch external via CORS wrapper for local development
     const externalUrl = encodeURIComponent('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php');
     const corsWrapper = `https://api.allorigins.win/get?url=${externalUrl}`;
 
@@ -41,7 +44,7 @@ export const ratesAPI = {
       throw new Error('Failed to fetch rates (fallback)');
     }
 
-    const wrapped = await response.json(); // { contents: string, status: { ... } }
+    const wrapped = await response.json();
     let raw;
     try {
       raw = JSON.parse(wrapped.contents);

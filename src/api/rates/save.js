@@ -1,10 +1,14 @@
 const { Pool } = require('pg');
+// Vercel provides fetch in Node 20, but for compatibility we use node-fetch
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const DB_URL = process.env.DATABASE_URL;
 const SOURCE_URL = 'https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php';
 
 function getPool() {
+  if (!DB_URL) {
+    throw new Error('DATABASE_URL is not set. Configure it in Vercel project settings.');
+  }
   return new Pool({
     connectionString: DB_URL,
     ssl: { rejectUnauthorized: false },
@@ -32,7 +36,7 @@ async function ensureTable(pool) {
  */
 async function fetchLiveRates() {
   const res = await fetch(SOURCE_URL, { headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error(`Failed to fetch rates: ${res.status} ${res.statusText}`);
+  if (!res.ok) throw new Error(\`Failed to fetch rates: \${res.status} \${res.statusText}\`);
   const raw = await res.json();
 
   // Normalize to rates table schema
@@ -94,6 +98,6 @@ module.exports = async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     return res.status(500).end(JSON.stringify({ success: false, error: err.message }));
   } finally {
-    await pool.end();
+    try { await pool.end(); } catch (_) {}
   }
 };

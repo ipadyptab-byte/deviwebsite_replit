@@ -12,9 +12,7 @@
     }
   },
   "crons": [
-    {
-      "path": "/api/rates/save",
-      "schedule": "*/15 * * * *"
-    }
+    { "path": "/api/rates/save", "schedule": "0 * * * *" },
+    { "path": "/api/rates/sync-gold-rates", "schedule": "*/30 * * * *" }
   ]
 }

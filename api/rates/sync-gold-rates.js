@@ -1,0 +1,1 @@
+module.exports = require('../../src/api/rates/sync-gold-rates.js');

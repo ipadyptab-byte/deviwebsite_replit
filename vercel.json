@@ -16,3 +16,15 @@
     { "path": "/api/rates/sync-gold-rates", "schedule": "*/30 * * * *" }
   ]
 }
+{
+  "rewrites": [
+    {
+      "source": "/displayrates",
+      "destination": "https://tv-rate-display.vercel.app"
+    },
+    {
+      "source": "/displayrates/:path*",
+      "destination": "https://tv-rate-display.vercel.app/:path*"
+    }
+  ]
+}

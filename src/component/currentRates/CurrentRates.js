@@ -13,19 +13,31 @@ const CurrentRates = () => {
   const [updatedAt, setUpdatedAt] = useState("");
 
   const fetchRatesFromDb = async () => {
-    const res = await fetch("/api/rates", { cache: "no-store" });
-    if (!res.ok) {
-      throw new Error(`Failed to fetch /api/rates: ${res.status}`);
+    const tryFetch = async (url) => {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) return null;
+      return res.json();
+    };
+
+    // 1) Local /api (same deployment)
+    // 2) Fallback to tv-rate-display project via Vercel rewrite (/displayrates -> tv-rate-display.vercel.app)
+    // 3) Fallback to live proxy
+    const data =
+      (await tryFetch("/api/rates")) ||
+      (await tryFetch("/displayrates/api/rates")) ||
+      (await tryFetch("/api/rates/live"));
+
+    if (!data) {
+      throw new Error("Failed to fetch rates from any source");
     }
 
-    const data = await res.json();
     setRates({
       vedhani: data.vedhani || "",
-      ornaments22K: data.ornaments22K || "",
-      ornaments18K: data.ornaments18K || "",
+      ornaments22K: data.ornaments22K || data.ornaments22k || "",
+      ornaments18K: data.ornaments18K || data.ornaments18k || "",
       silver: data.silver || "",
     });
-    setUpdatedAt(data.updated_at || "");
+    setUpdatedAt(data.updated_at || data.updatedAt || "");
   };
 
   useEffect(() => {

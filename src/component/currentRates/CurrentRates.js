@@ -19,13 +19,16 @@ const CurrentRates = () => {
       return res.json();
     };
 
-    const ratesUrl = "https://displayrates.devi-jewellers.com/api/rates/sync";
+    // IMPORTANT: Do NOT call /sync here. /sync writes a new row each call,
+    // which makes the timestamp look like the current system time.
+    // Use /current to read the last stored DB row.
+    const ratesUrl = "https://displayrates.devi-jewellers.com/api/rates/current";
     const proxied = encodeURIComponent(ratesUrl);
     const corsWrapper = `https://api.allorigins.win/raw?url=${proxied}`;
 
     // Prefer same-origin (Vercel rewrite) to avoid browser CORS.
     const data =
-      (await tryFetch("/displayrates/api/rates/sync")) ||
+      (await tryFetch("/displayrates/api/rates/current")) ||
       (await tryFetch(ratesUrl)) ||
       (await tryFetch(corsWrapper));
 
@@ -33,8 +36,8 @@ const CurrentRates = () => {
       throw new Error("Failed to fetch rates");
     }
 
-    // /api/rates/sync returns: { message, rates: { ... } }
-    const r = data?.rates || {};
+    // /api/rates/current returns the rates row directly
+    const r = data?.rates || data || {};
 
     const silverPerGramSale =
       typeof r.silver_per_kg_sale === "number"

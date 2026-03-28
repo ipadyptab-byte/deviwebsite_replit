@@ -13,16 +13,28 @@ const CurrentRates = () => {
   const [createdAt, setCreatedAt] = useState("");
 
   const fetchRates = async () => {
-    const res = await fetch(
-      "https://tv-rate-display.vercel.app/api/rates/sync",
-      { cache: "no-store" }
-    );
+    const tryFetch = async (url) => {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) return null;
+      return res.json();
+    };
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch rates (status ${res.status})`);
+    // Use Vercel rewrite proxy to avoid browser CORS issues.
+    // /displayrates/* -> https://tv-rate-display.vercel.app/*
+    const proxied = encodeURIComponent(
+      "https://tv-rate-display.vercel.app/api/rates/sync"
+    );
+    const corsWrapper = `https://api.allorigins.win/raw?url=${proxied}`;
+
+    const data =
+      (await tryFetch("/displayrates/api/rates/sync")) ||
+      (await tryFetch("https://tv-rate-display.vercel.app/api/rates/sync")) ||
+      (await tryFetch(corsWrapper));
+
+    if (!data) {
+      throw new Error("Failed to fetch rates");
     }
 
-    const data = await res.json();
     const r = data?.rates || {};
 
     const silverPerGramSale =

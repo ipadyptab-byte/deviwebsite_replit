@@ -1,5 +1,15 @@
 # Getting Started with Create React App
 
+## Environment variables
+
+This project reads the current rates from a Postgres database via the serverless API routes in `api/`. Make sure `DATABASE_URL` is set in your deployment/runtime environment.
+
+Example:
+
+```bash
+export DATABASE_URL="postgresql://..."
+```
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

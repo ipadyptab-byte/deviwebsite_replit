@@ -23,7 +23,11 @@ const CurrentRates = () => {
     const proxied = encodeURIComponent(ratesUrl);
     const corsWrapper = `https://api.allorigins.win/raw?url=${proxied}`;
 
-    const data = (await tryFetch(ratesUrl)) || (await tryFetch(corsWrapper));
+    // Prefer same-origin (Vercel rewrite) to avoid browser CORS.
+    const data =
+      (await tryFetch("/displayrates/api/rates/sync")) ||
+      (await tryFetch(ratesUrl)) ||
+      (await tryFetch(corsWrapper));
 
     if (!data) {
       throw new Error("Failed to fetch rates");

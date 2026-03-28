@@ -20,15 +20,15 @@ const CurrentRates = () => {
     };
 
     // Use Vercel rewrite proxy to avoid browser CORS issues.
-    // /displayrates/* -> https://tv-rate-display.vercel.app/*
+    // /displayrates/* -> https://displayrates.devi-jewellers.com/*
     const proxied = encodeURIComponent(
-      "https://tv-rate-display.vercel.app/api/rates/current"
+      "https://displayrates.devi-jewellers.com/api/rates/current"
     );
     const corsWrapper = `https://api.allorigins.win/raw?url=${proxied}`;
 
     const data =
       (await tryFetch("/displayrates/api/rates/current")) ||
-      (await tryFetch("https://tv-rate-display.vercel.app/api/rates/current")) ||
+      (await tryFetch("https://displayrates.devi-jewellers.com/api/rates/current")) ||
       (await tryFetch(corsWrapper));
 
     if (!data) {

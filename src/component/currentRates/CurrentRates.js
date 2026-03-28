@@ -55,11 +55,11 @@ const CurrentRates = () => {
       <span className="title">Current Rates</span>
 
       <div className="tooltip">
-       <<h1>Today's Gold Rat</</h1>
-       <<p className="rates-updated-at">Last updated: {updatedAtLab}</alp>
-       <idiv className="border-line">
-         < img src={borderLine} alt="border line" />
-      </  div>
+        <h1>Today's Gold Rates</h1>
+        <p className="rates-updated-at">Last updated: {updatedAtLabel}</p>
+        <div className="border-line">
+          <img src={borderLine} alt="border line" />
+        </div>
         <ul>
           <li className="rates">
             Vedhani <span>₹{rates.vedhani || "N/A"}</span>

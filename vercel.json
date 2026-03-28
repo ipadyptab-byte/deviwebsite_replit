@@ -1,12 +1,18 @@
 {
-"rewrites": [
-{
-"source": "/displayrates",
-"destination": "https://tv-rate-display.vercel.app"
-},
-{
-"source": "/displayrates/:path*",
-"destination": "https://tv-rate-display.vercel.app/:path*"
-}
-]
+  "rewrites": [
+    {
+      "source": "/displayrates",
+      "destination": "https://tv-rate-display.vercel.app"
+    },
+    {
+      "source": "/displayrates/:path*",
+      "destination": "https://tv-rate-display.vercel.app/:path*"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/rates/save",
+      "schedule": "0 * * * *"
+    }
+  ]
 }

@@ -14,7 +14,10 @@ const CurrentRates = () => {
 
   const fetchRatesFromDb = async () => {
     const tryFetch = async (url) => {
-      const res = await fetch(url, { cache: "no-store" });
+      const res = await fetch(url, {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
       if (!res.ok) return null;
       return res.json();
     };
@@ -36,23 +39,40 @@ const CurrentRates = () => {
 
     // 1) Local /api (same deployment)
     // 2) Fallback to tv-rate-display project via Vercel rewrite (/displayrates -> tv-rate-display.vercel.app)
-    // 3) Fallback to live proxy
-    // 4) Last-resort: external via CORS wrapper
+    // 3) Direct tv-rate-display endpoint
+    // 4) Live proxy
+    // 5) Last-resort: external via CORS wrapper
     const data =
       (await tryFetch("/api/rates")) ||
       (await tryFetch("/displayrates/api/rates")) ||
+      (await tryFetch("https://tv-rate-display.vercel.app/api/rates")) ||
+      (await tryFetch("https://tv-rate-display.vercel.app/api/rates/live")) ||
       (await tryFetch("/api/rates/live")) ||
       (await fetchExternal());
+
+    
 
     if (!data) {
       throw new Error("Failed to fetch rates from any source");
     }
 
+    const normalizeCurrencyValue = (v) => {
+      if (v === null || v === undefined) return "";
+      if (typeof v === "number") return String(v);
+      const s = String(v).trim();
+      if (!s) return "";
+      return s.replace(/[,\s]/g, "");
+    };
+
     setRates({
-      vedhani: data.vedhani || data["24K Gold"] || "",
-      ornaments22K: data.ornaments22K || data.ornaments22k || data["22K Gold"] || "",
-      ornaments18K: data.ornaments18K || data.ornaments18k || data["18K Gold"] || "",
-      silver: data.silver || data["Silver"] || "",
+      vedhani: normalizeCurrencyValue(data.vedhani || data["24K Gold"]),
+      ornaments22K: normalizeCurrencyValue(
+        data.ornaments22K || data.ornaments22k || data["22K Gold"]
+      ),
+      ornaments18K: normalizeCurrencyValue(
+        data.ornaments18K || data.ornaments18k || data["18K Gold"]
+      ),
+      silver: normalizeCurrencyValue(data.silver || data["Silver"]),
     });
 
     const updated = data.updated_at || data.updatedAt || "";

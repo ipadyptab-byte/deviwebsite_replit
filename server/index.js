@@ -115,6 +115,20 @@ let db = null;
 if (!process.env.DATABASE_URL) {
   console.warn('DATABASE_URL is not set. DB-backed routes (/api/rates, /api/images, etc.) will be disabled. Live rates, sync-rest and rest-check remain available.');
 
+  const shapeRatesResponse = (row) => {
+    const updated = row?.updatedAt
+      ? (row.updatedAt instanceof Date ? row.updatedAt.toISOString() : String(row.updatedAt))
+      : '';
+
+    return {
+      vedhani: row?.vedhani ?? '',
+      ornaments22K: row?.ornaments22K ?? row?.ornaments22k ?? '',
+      ornaments18K: row?.ornaments18K ?? row?.ornaments18k ?? '',
+      silver: row?.silver ?? '',
+      updated_at: updated,
+    };
+  };
+
   // Provide a live-backed /api/rates endpoint so pages don't go blank
   app.get('/api/rates', async (req, res) => {
     try {
@@ -127,14 +141,14 @@ if (!process.env.DATABASE_URL) {
       const text = await response.text();
       let raw;
       try { raw = JSON.parse(text); } catch { return res.status(502).json({ error: 'External rates response was not valid JSON', sample: text.slice(0, 200) }); }
-      return res.json({
+
+      return res.json(shapeRatesResponse({
         vedhani: raw['24K Gold'] ?? '',
-        ornaments22k: raw['22K Gold'] ?? '',
-        ornaments18k: raw['18K Gold'] ?? '',
+        ornaments22K: raw['22K Gold'] ?? '',
+        ornaments18K: raw['18K Gold'] ?? '',
         silver: raw['Silver'] ?? '',
-        updatedAt: new Date().toISOString(),
-        source: 'businessmantra',
-      });
+        updatedAt: new Date(),
+      }));
     } catch (error) {
       console.error('Error fetching live-backed /api/rates:', error);
       return res.status(500).json({ error: 'Failed to fetch rates' });
@@ -142,6 +156,20 @@ if (!process.env.DATABASE_URL) {
   });
 
 } else {
+  const shapeRatesResponse = (row) => {
+    const updated = row?.updatedAt
+      ? (row.updatedAt instanceof Date ? row.updatedAt.toISOString() : String(row.updatedAt))
+      : '';
+
+    return {
+      vedhani: row?.vedhani ?? '',
+      ornaments22K: row?.ornaments22k ?? '',
+      ornaments18K: row?.ornaments18k ?? '',
+      silver: row?.silver ?? '',
+      updated_at: updated,
+    };
+  };
+
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
@@ -154,7 +182,7 @@ if (!process.env.DATABASE_URL) {
     try {
       const allRates = await db.select().from(rates).orderBy(desc(rates.updatedAt)).limit(1);
       if (allRates.length > 0) {
-        res.json(allRates[0]);
+        res.json(shapeRatesResponse(allRates[0]));
       } else {
         res.status(404).json({ error: 'No rates found' });
       }
@@ -193,12 +221,10 @@ if (!process.env.DATABASE_URL) {
           .returning();
       }
 
-      res.json(result[0]);
+      res.json(shapeRatesResponse(result[0]));
     } catch (error) {
       console.error('Error updating rates:', error);
-      res.status(500).json({ error: 'Failed to update rates' });
-    }
-  });
+      res.status(500).json({ error: 'Failed to update rates' });});
 
   // Fetch from external source and persist to DB, return saved row
   app.post('/api/rates/sync', async (req, res) => {
@@ -231,7 +257,7 @@ if (!process.env.DATABASE_URL) {
         result = await db.insert(rates).values(payload).returning();
       }
 
-      return res.json(result[0]);
+      return res.json(shapeRatesResponse(result[0]));
     } catch (error) {
       console.error('Error syncing rates from external source:', error);
       return res.status(500).json({ error: 'Failed to sync rates' });

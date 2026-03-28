@@ -25,6 +25,38 @@ async function ensureTable(pool) {
   `);
 }
 
+async function fetchLiveRates() {
+  const doFetch = async (url, options) => {
+    if (typeof fetch === 'function') {
+      return fetch(url, options);
+    }
+    const mod = await import('node-fetch');
+    return mod.default(url, options);
+  };
+
+  const res = await doFetch('https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php', {
+    headers: { Accept: 'application/json' },
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch live rates: ${res.status} ${res.statusText}`);
+  }
+
+  const text = await res.text();
+  let raw;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    throw new Error('Live rates response was not valid JSON');
+  }
+
+  return {
+    vedhani: (raw['24K Gold'] ?? '').toString(),
+    ornaments22k: (raw['22K Gold'] ?? '').toString(),
+    ornaments18k: (raw['18K Gold'] ?? '').toString(),
+    silver: (raw['Silver'] ?? '').toString(),
+  };
+}
+
 function shapeRow(row) {
   if (!row) return null;
   return {
@@ -56,8 +88,17 @@ module.exports = async (req, res) => {
     if (req.method === 'GET') {
       const { rows } = await pool.query('SELECT * FROM rates ORDER BY updated_at DESC LIMIT 1;');
       if (!rows || rows.length === 0) {
+        const payload = await fetchLiveRates();
+        await pool.query(
+          `
+          INSERT INTO rates (vedhani, ornaments22k, ornaments18k, silver)
+          VALUES ($1, $2, $3, $4);
+          `,
+          [payload.vedhani, payload.ornaments22k, payload.ornaments18k, payload.silver]
+        );
+        const inserted = await pool.query('SELECT * FROM rates ORDER BY updated_at DESC LIMIT 1;');
         res.setHeader('Content-Type', 'application/json');
-        return res.status(404).end(JSON.stringify({ error: 'No rates found' }));
+        return res.status(200).end(JSON.stringify(shapeRow(inserted.rows[0])));
       }
       res.setHeader('Content-Type', 'application/json');
       return res.status(200).end(JSON.stringify(shapeRow(rows[0])));

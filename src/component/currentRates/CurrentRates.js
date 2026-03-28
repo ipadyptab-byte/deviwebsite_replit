@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BsGraphUpArrow } from "react-icons/bs";
 import borderLine from "../../images/border_line.png";
 import "./CurrentRates.css";

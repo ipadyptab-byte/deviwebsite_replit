@@ -49,12 +49,14 @@ const CurrentRates = () => {
     }
 
     setRates({
-      vedhani: data.vedhani || "",
-      ornaments22K: data.ornaments22K || data.ornaments22k || "",
-      ornaments18K: data.ornaments18K || data.ornaments18k || "",
-      silver: data.silver || "",
+      vedhani: data.vedhani || data["24K Gold"] || "",
+      ornaments22K: data.ornaments22K || data.ornaments22k || data["22K Gold"] || "",
+      ornaments18K: data.ornaments18K || data.ornaments18k || data["18K Gold"] || "",
+      silver: data.silver || data["Silver"] || "",
     });
-    setUpdatedAt(data.updated_at || data.updatedAt || "");
+
+    const updated = data.updated_at || data.updatedAt || "";
+    setUpdatedAt(updated || new Date().toISOString());
   };
 
   useEffect(() => {

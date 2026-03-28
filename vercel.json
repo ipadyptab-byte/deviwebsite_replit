@@ -2,11 +2,11 @@
 "rewrites": [
 {
 "source": "/displayrates",
-"destination": "https://tv-rate-display.vercel.app"
+"destination": "https://displayrates.devi-jewellers.com"
 },
 {
 "source": "/displayrates/:path*",
-"destination": "https://tv-rate-display.vercel.app/:path*"
+"destination": "https://displayrates.devi-jewellers.com/:path*"
 }
 ]
 }

@@ -67,7 +67,20 @@ const CurrentRates = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const updatedAtLabel = createdAt ? new Date(createdAt).toLocaleString() : "N/A";
+  const updatedAtLabel = (() => {
+    if (!createdAt) return "N/A";
+    const d = new Date(createdAt);
+    if (Number.isNaN(d.getTime())) return "N/A";
+    return d.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  })();
 
   return (
     <div className="icon_container">

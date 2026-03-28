@@ -22,20 +22,21 @@ const CurrentRates = () => {
     // Use Vercel rewrite proxy to avoid browser CORS issues.
     // /displayrates/* -> https://tv-rate-display.vercel.app/*
     const proxied = encodeURIComponent(
-      "https://tv-rate-display.vercel.app/api/rates/sync"
+      "https://tv-rate-display.vercel.app/api/rates/current"
     );
     const corsWrapper = `https://api.allorigins.win/raw?url=${proxied}`;
 
     const data =
-      (await tryFetch("/displayrates/api/rates/sync")) ||
-      (await tryFetch("https://tv-rate-display.vercel.app/api/rates/sync")) ||
+      (await tryFetch("/displayrates/api/rates/current")) ||
+      (await tryFetch("https://tv-rate-display.vercel.app/api/rates/current")) ||
       (await tryFetch(corsWrapper));
 
     if (!data) {
       throw new Error("Failed to fetch rates");
     }
 
-    const r = data?.rates || {};
+    // /api/rates/current returns the rates row directly
+    const r = data?.rates || data || {};
 
     const silverPerGramSale =
       typeof r.silver_per_kg_sale === "number"

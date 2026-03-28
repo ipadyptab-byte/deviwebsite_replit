@@ -10,71 +10,52 @@ const CurrentRates = () => {
     ornaments18K: "",
     silver: "",
   });
-  const [updatedAt, setUpdatedAt] = useState("");
+  const [createdAt, setCreatedAt] = useState("");
 
-  const fetchRatesFromDb = async () => {
-    const tryFetch = async (url) => {
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) return null;
-      return res.json();
-    };
+  const fetchRates = async () => {
+    const res = await fetch(
+      "https://tv-rate-display.vercel.app/api/rates/sync",
+      { cache: "no-store" }
+    );
 
-    const fetchExternal = async () => {
-      const externalUrl = encodeURIComponent(
-        "https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php"
-      );
-      const corsWrapper = `https://api.allorigins.win/get?url=${externalUrl}`;
-      const res = await fetch(corsWrapper, { cache: "no-store" });
-      if (!res.ok) return null;
-      const wrapped = await res.json();
-      try {
-        return JSON.parse(wrapped.contents);
-      } catch {
-        return null;
-      }
-    };
-
-    // 1) Local /api (same deployment)
-    // 2) Fallback to tv-rate-display project via Vercel rewrite (/displayrates -> tv-rate-display.vercel.app)
-    // 3) Fallback to live proxy
-    // 4) Last-resort: external via CORS wrapper
-    const data =
-      (await tryFetch("/api/rates")) ||
-      (await tryFetch("/displayrates/api/rates")) ||
-      (await tryFetch("/api/rates/live")) ||
-      (await fetchExternal());
-
-    if (!data) {
-      throw new Error("Failed to fetch rates from any source");
+    if (!res.ok) {
+      throw new Error(`Failed to fetch rates (status ${res.status})`);
     }
 
+    const data = await res.json();
+    const r = data?.rates || {};
+
+    const silverPerGramSale =
+      typeof r.silver_per_kg_sale === "number"
+        ? (r.silver_per_kg_sale / 1000).toFixed(2)
+        : "";
+
     setRates({
-      vedhani: data.vedhani || "",
-      ornaments22K: data.ornaments22K || data.ornaments22k || "",
-      ornaments18K: data.ornaments18K || data.ornaments18k || "",
-      silver: data.silver || "",
+      vedhani: r.gold_24k_sale ?? "",
+      ornaments22K: r.gold_22k_sale ?? "",
+      ornaments18K: r.gold_18k_sale ?? "",
+      silver: silverPerGramSale,
     });
-    setUpdatedAt(data.updated_at || data.updatedAt || "");
+
+    setCreatedAt(r.created_date || "");
   };
 
   useEffect(() => {
-    fetchRatesFromDb().catch((err) => {
-      console.error("❌ Failed to fetch rates from DB:", err);
+    fetchRates().catch((err) => {
+      console.error("❌ Failed to fetch rates:", err);
     });
 
     // Refresh every 30s
     const interval = setInterval(() => {
-      fetchRatesFromDb().catch((err) => {
-        console.error("❌ Failed to fetch rates from DB:", err);
+      fetchRates().catch((err) => {
+        console.error("❌ Failed to fetch rates:", err);
       });
     }, 30000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const updatedAtLabel = updatedAt
-    ? new Date(updatedAt).toLocaleString()
-    : "N/A";
+  const createdAtLabel = createdAt ? new Date(createdAt).toLocaleString() : "N/A";
 
   return (
     <div className="icon_container">
@@ -85,7 +66,7 @@ const CurrentRates = () => {
 
       <div className="tooltip">
         <h1>Today's Gold Rates</h1>
-        <p className="rates-updated-at">Last updated: {updatedAtLabel}</p>
+        <p className="rates-updated-at">Created: {createdAtLabel}</p>
         <div className="border-line">
           <img src={borderLine} alt="border line" />
         </div>

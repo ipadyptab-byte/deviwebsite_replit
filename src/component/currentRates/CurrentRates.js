@@ -19,13 +19,30 @@ const CurrentRates = () => {
       return res.json();
     };
 
+    const fetchExternal = async () => {
+      const externalUrl = encodeURIComponent(
+        "https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php"
+      );
+      const corsWrapper = `https://api.allorigins.win/get?url=${externalUrl}`;
+      const res = await fetch(corsWrapper, { cache: "no-store" });
+      if (!res.ok) return null;
+      const wrapped = await res.json();
+      try {
+        return JSON.parse(wrapped.contents);
+      } catch {
+        return null;
+      }
+    };
+
     // 1) Local /api (same deployment)
     // 2) Fallback to tv-rate-display project via Vercel rewrite (/displayrates -> tv-rate-display.vercel.app)
     // 3) Fallback to live proxy
+    // 4) Last-resort: external via CORS wrapper
     const data =
       (await tryFetch("/api/rates")) ||
       (await tryFetch("/displayrates/api/rates")) ||
-      (await tryFetch("/api/rates/live"));
+      (await tryFetch("/api/rates/live")) ||
+      (await fetchExternal());
 
     if (!data) {
       throw new Error("Failed to fetch rates from any source");

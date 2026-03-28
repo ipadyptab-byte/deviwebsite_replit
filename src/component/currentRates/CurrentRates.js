@@ -67,7 +67,7 @@ const CurrentRates = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const createdAtLabel = createdAt ? new Date(createdAt).toLocaleString() : "N/A";
+  const updatedAtLabel = createdAt ? new Date(createdAt).toLocaleString() : "N/A";
 
   return (
     <div className="icon_container">
@@ -78,21 +78,21 @@ const CurrentRates = () => {
 
       <div className="tooltip">
         <h1>Today's Gold Rates</h1>
-        <p className="rates-updated-at">Created: {createdAtLabel}</p>
+        <p className="rates-updated-at">Updated: {updatedAtLabel}</p>
         <div className="border-line">
           <img src={borderLine} alt="border line" />
         </div>
         <ul>
           <li className="rates">
-            Vedhani <span>₹{rates.vedhani || "N/A"}</span>
+            Vedhani <span>₹{rates.vedhani || "N/A"}/10gms</span>
           </li>
           <br />
           <li className="rates">
-            22KT <span>₹{rates.ornaments22K || "N/A"}</span>
+            22KT <span>₹{rates.ornaments22K || "N/A"}/10gms</span>
           </li>
           <br />
           <li className="rates">
-            18KT <span>₹{rates.ornaments18K || "N/A"}</span>
+            18KT <span>₹{rates.ornaments18K || "N/A"}/10gms</span>
           </li>
           <br />
           <li className="rates">

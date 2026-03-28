@@ -19,24 +19,18 @@ const CurrentRates = () => {
       return res.json();
     };
 
-    // Use Vercel rewrite proxy to avoid browser CORS issues.
-    // /displayrates/* -> https://displayrates.devi-jewellers.com/*
-    const proxied = encodeURIComponent(
-      "https://displayrates.devi-jewellers.com/api/rates/current"
-    );
+    const ratesUrl = "https://displayrates.devi-jewellers.com/api/rates/sync";
+    const proxied = encodeURIComponent(ratesUrl);
     const corsWrapper = `https://api.allorigins.win/raw?url=${proxied}`;
 
-    const data =
-      (await tryFetch("/displayrates/api/rates/current")) ||
-      (await tryFetch("https://displayrates.devi-jewellers.com/api/rates/current")) ||
-      (await tryFetch(corsWrapper));
+    const data = (await tryFetch(ratesUrl)) || (await tryFetch(corsWrapper));
 
     if (!data) {
       throw new Error("Failed to fetch rates");
     }
 
-    // /api/rates/current returns the rates row directly
-    const r = data?.rates || data || {};
+    // /api/rates/sync returns: { message, rates: { ... } }
+    const r = data?.rates || {};
 
     const silverPerGramSale =
       typeof r.silver_per_kg_sale === "number"

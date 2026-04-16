@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { sql } from '@/lib/db'
 import { notFound } from 'next/navigation'
 
@@ -6,11 +7,9 @@ interface PageProps {
 }
 
 export default async function InvoicePage({ params }: PageProps) {
-  const { id } = await params
-  
+const { id } = params  
   // Extract doc number from id (e.g., JR1077 or 1077)
-  const docNum = id.replace(/^JR/, '')
-  
+const docNum = id.replace(/[^0-9]/g, '')  
   // Get the repair record
   const result = await sql().query(
     `SELECT * FROM repair_records WHERE doc_num = $1`,

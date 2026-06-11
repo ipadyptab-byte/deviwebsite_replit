@@ -4,7 +4,6 @@ import borderLine from "../../images/border_line.png";
 import "./CurrentRates.css";
 
 const API_URL = "https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php";
-const CORS_PROXY = "https://api.allorigins.win/raw?url=";
 
 const CurrentRates = () => {
   const [rates, setRates] = useState(null);
@@ -12,27 +11,14 @@ const CurrentRates = () => {
 
   const fetchRates = async () => {
     try {
-      // Try direct fetch first, then CORS proxy
-      let data = null;
+      const res = await fetch(API_URL, {
+        cache: "no-store",
+        mode: "cors",
+        credentials: "omit"
+      });
       
-      try {
-        const res = await fetch(API_URL, { cache: "no-store" });
-        if (res.ok) {
-          data = await res.json();
-        }
-      } catch (e) {
-        // Direct fetch failed, try CORS proxy
-      }
-      
-      if (!data) {
-        const proxyUrl = `${CORS_PROXY}${encodeURIComponent(API_URL)}`;
-        const res = await fetch(proxyUrl, { cache: "no-store" });
-        if (res.ok) {
-          data = await res.json();
-        }
-      }
-
-      if (data) {
+      if (res.ok) {
+        const data = await res.json();
         setRates({
           vedhani: data["24K Gold"] || 0,
           ornaments22K: data["22K Gold"] || 0,

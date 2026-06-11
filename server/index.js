@@ -224,7 +224,9 @@ if (!process.env.DATABASE_URL) {
       res.json(shapeRatesResponse(result[0]));
     } catch (error) {
       console.error('Error updating rates:', error);
-      res.status(500).json({ error: 'Failed to update rates' });});
+      res.status(500).json({ error: 'Failed to update rates' });
+    }
+  });
 
   // Fetch from external source and persist to DB, return saved row
   app.post('/api/rates/sync', async (req, res) => {
@@ -411,7 +413,7 @@ const buildPath = path.join(__dirname, '..', 'build');
 app.use(express.static(buildPath));
 
 // SPA fallback: send index.html for non-API routes
-app.get('*', (req, res) => {
+app.use((req, res, next) => {
   // If the request is for an API route, let previous handlers deal with it
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'Not found' });

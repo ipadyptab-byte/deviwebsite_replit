@@ -3,29 +3,23 @@ import { BsGraphUpArrow } from "react-icons/bs";
 import borderLine from "../../images/border_line.png";
 import "./CurrentRates.css";
 
-const API_URL = "https://www.businessmantra.info/gold_rates/devi_gold_rate/api.php";
-
 const CurrentRates = () => {
   const [rates, setRates] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
   const fetchRates = async () => {
     try {
-      const res = await fetch(API_URL, {
-        cache: "no-store",
-        mode: "cors",
-        credentials: "omit"
-      });
+      const res = await fetch("/api/rates/live", { cache: "no-store" });
       
       if (res.ok) {
         const data = await res.json();
         setRates({
-          vedhani: data["24K Gold"] || 0,
-          ornaments22K: data["22K Gold"] || 0,
-          ornaments18K: data["18K Gold"] || 0,
-          silver: data["Silver"] || 0,
+          vedhani: data.vedhani || 0,
+          ornaments22K: data.ornaments22K || 0,
+          ornaments18K: data.ornaments18K || 0,
+          silver: data.silver || 0,
         });
-        setLastUpdated(new Date());
+        setLastUpdated(data.updatedAt ? new Date(data.updatedAt) : new Date());
       }
     } catch (err) {
       console.error("Failed to fetch rates:", err);

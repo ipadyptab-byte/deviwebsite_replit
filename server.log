@@ -1,0 +1,270 @@
+
+> devi-jewellers@1.0.0 dev
+> concurrently "npm run server" "npm run client:dev"
+
+[0] 
+[0] > devi-jewellers@1.0.0 server
+[0] > node server/index.js
+[0] 
+[1] 
+[1] > devi-jewellers@1.0.0 client:dev
+[1] > DANGEROUSLY_DISABLE_HOST_CHECK=true PORT=3000 HOST=0.0.0.0 react-scripts start
+[1] 
+[0] /workspace/project/deviwebsite_replit/server/index.js:227
+[0]       res.status(500).json({ error: 'Failed to update rates' });});
+[0]                                                                  ^
+[0] 
+[0] SyntaxError: Unexpected token ')'
+[0]     at wrapSafe (node:internal/modules/cjs/loader:1713:18)
+[0]     at Module._compile (node:internal/modules/cjs/loader:1755:20)
+[0]     at Object..js (node:internal/modules/cjs/loader:1913:10)
+[0]     at Module.load (node:internal/modules/cjs/loader:1505:32)
+[0]     at Function._load (node:internal/modules/cjs/loader:1309:12)
+[0]     at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+[0]     at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)
+[0]     at node:internal/main/run_main_module:36:49
+[0] 
+[0] Node.js v22.22.3
+[0] npm run server exited with code 1
+[1] [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[1] Attempting to bind to HOST environment variable: 0.0.0.0
+[1] If this was unintentional, check that you haven't mistakenly set it in your shell.
+[1] Learn more here: https://cra.link/advanced-config
+[1] 
+[1] Browserslist: browsers data (caniuse-lite) is 8 months old. Please run:
+[1]   npx update-browserslist-db@latest
+[1]   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[1] (node:1515) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+[1] (Use `node --trace-deprecation ...` to show where the warning was created)
+[1] (node:1515) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+[1] Starting the development server...
+[1] 
+[1] Compiled with warnings.
+[1] 
+[1] [eslint] 
+[1] src/component/productCard/ProductCard.js
+[1]   Line 5:10:   'MdShoppingCart' is defined but never used  no-unused-vars
+[1]   Line 75:47:  Expected '===' and instead saw '=='         eqeqeq
+[1]   Line 76:51:  Expected '===' and instead saw '=='         eqeqeq
+[1]   Line 77:53:  Expected '===' and instead saw '=='         eqeqeq
+[1] 
+[1] Search for the keywords to learn more about each warning.
+[1] To ignore, add // eslint-disable-next-line to the line before.
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/layout/Layout.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/layout/Layout.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/pages/bestSellers/BestSellers.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/pages/home/Home.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/pages/home/Home.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/header/Header.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/header/Header.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/footer/Footer.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/footer/Footer.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/trending/Trending.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/trending/Trending.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/collections/Collections.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/collections/Collections.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/banner/Banner.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/banner/Banner.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/services/Services.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/services/Services.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/about/AboutSection.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/about/aboutushero.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/about/aboutinfo.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/about/StoreInfoSection.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/about/InvestmentSection.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/schemess/HeroSection.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/schemess/ProductBar.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/schemess/Schemes.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/hero/Hero.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/hero/Hero.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] LOG from ./node_modules/sass-loader/dist/cjs.js sass-loader ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[2]!./node_modules/resolve-url-loader/index.js??ruleSet[1].rules[1].oneOf[7].use[3]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[1].oneOf[7].use[4]!./src/component/productCard/ProductCard.scss
+[1] <w> Deprecation The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+[1] <w> 
+[1] <w> More info: https://sass-lang.com/d/legacy-js-api
+[1] <w> 
+[1] <w> null
+[1] <w> Deprecation Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+[1] <w> 
+[1] <w> More info and automated migrator: https://sass-lang.com/d/import
+[1] <w> 
+[1] <w> src/component/productCard/ProductCard.scss 1:9  root stylesheet
+[1] <w>
+[1] 
+[1] WARNING in [eslint] 
+[1] src/component/productCard/ProductCard.js
+[1]   Line 5:10:   'MdShoppingCart' is defined but never used  no-unused-vars
+[1]   Line 75:47:  Expected '===' and instead saw '=='         eqeqeq
+[1]   Line 76:51:  Expected '===' and instead saw '=='         eqeqeq
+[1]   Line 77:53:  Expected '===' and instead saw '=='         eqeqeq
+[1] 
+[1] webpack compiled with 1 warning
+[1] (node:1515) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+[1] Proxy error: Could not proxy request /api/rates/live from localhost:3000 to http://localhost:3001.
+[1] See https://nodejs.org/api/errors.html#errors_common_system_errors for more information (ECONNREFUSED).
+[1] 
+[1] Proxy error: Could not proxy request /api/rates/live from localhost:3000 to http://localhost:3001.
+[1] See https://nodejs.org/api/errors.html#errors_common_system_errors for more information (ECONNREFUSED).
+[1] 
+[1] Proxy error: Could not proxy request /api/rates/live from localhost:3000 to http://localhost:3001.
+[1] See https://nodejs.org/api/errors.html#errors_common_system_errors for more information (ECONNREFUSED).
+[1] 
+[1] Proxy error: Could not proxy request /api/rates/live from localhost:3000 to http://localhost:3001.
+[1] See https://nodejs.org/api/errors.html#errors_common_system_errors for more information (ECONNREFUSED).
+[1] 
+[1] Proxy error: Could not proxy request /api/rates/live from localhost:3000 to http://localhost:3001.
+[1] See https://nodejs.org/api/errors.html#errors_common_system_errors for more information (ECONNREFUSED).
+[1] 

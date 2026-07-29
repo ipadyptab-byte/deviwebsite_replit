@@ -322,11 +322,11 @@ export default function ContactUsPage() {
 
             <label>
               I have read and agree to the{" "}
-              <a href="/terms-and-conditions">
+              <a href="https://www.devi-jewellers.com/terms-conditions">
                 Terms & Conditions
               </a>{" "}
               and{" "}
-              <a href="/privacy-policy">
+              <a href="https://www.devi-jewellers.com/privacy-policy">
                 Privacy Policy
               </a>.
             </label>

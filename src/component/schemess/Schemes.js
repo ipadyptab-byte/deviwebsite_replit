@@ -8,15 +8,15 @@ const schemesData = [
   },
   {
     title: "Suvarna Vruddhi Yojna",
-    description: "According to this scheme, customers can pay any amount of money to purchase Gold. The purchases can even be made everyday until one year is completed. After an year, in 13th month, customer's will receive the purchased Gold jewellery with 9% interest on it."
+    description: "According to this scheme, customers can pay any amount of money to purchase of Gold Jewellery. The purchases can even be made everyday until one year is completed. After an year, in 12th month, customer's will receive the purchased Gold jewellery with 9% interest on it."
   },
   {
     title: "Suvarna Kalash Yojna",
-    description: "In this scheme, customers should at least deposit 25 gram pure Gold or Gold jewellery to us. After an year, customers will receive their gold/jewellery with 3% interest added in form of Gold. Customers can profit through both the interest on gold and global increase in gold rate."
+    description: "In this scheme, customers should at least deposit 25 gram pure Gold or Gold jewellery to us. After an year, customers will receive their gold/jewellery with 2% interest added in form of Gold. Customers can profit through both the interest on gold and global increase in gold rate."
   },
   {
     title: "Dhan Vruddhi Yojna",
-    description: "Customers can invest their money in form of cash which will be repaid after an year with 3% interest added to it."
+    description: "Customers can invest their money in form of cash which will be repaid after an year with 8% interest added to it."
   },
   {
     title: "Sampoorna Bharat Bachat Yojna",

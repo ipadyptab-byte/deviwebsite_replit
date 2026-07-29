@@ -14,6 +14,8 @@ import { ParallaxProvider } from 'react-scroll-parallax';
 import Schemes from './pages/schemes/schemes';
 import About from './pages/aboutus/about';
 import ContactUsPage from './pages/contactUs/ContactUs';
+import PrivacyPolicy from './pages/privacyPolicy/PrivacyPolicy';
+import TermsConditions from './pages/termsConditions/TermsConditions';
 import UploadImage from './component/UploadImage/UploadImage';
 import Admin from './pages/admin/Admin';
 
@@ -34,6 +36,8 @@ function App() {
           <Route path="contactUs" element={<ContactUsPage/>}/>
           <Route path="schemes" element={<Schemes/>}/>
           <Route path="about" element={<About/>}/>
+          <Route path="privacy-policy" element={<PrivacyPolicy/>}/>
+          <Route path="terms-conditions" element={<TermsConditions/>}/>
           <Route path="admin" element={<Admin/>}/>
           <Route path="upload" element={<UploadImage/>}/>
         </Route>

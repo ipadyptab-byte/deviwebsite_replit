@@ -1,5 +1,6 @@
 import React from 'react';
 import './Footer.scss';
+import { Link } from 'react-router-dom';
 import { LiaFacebookF, LiaTwitter, LiaInstagram } from "react-icons/lia";
 import { AiFillYoutube } from "react-icons/ai";
 import { IconContext } from "react-icons";
@@ -8,13 +9,18 @@ const Footer = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth' // This will make the scroll smooth
+      behavior: 'smooth'
     });
   };
   return (
     <div className="footer_container">
       <div className="mx_width footer_wapper">
-        {/* <div className="copyright">© 2023 Jewellery. Theme by DA.</div> */}
+        <div className="footer_links">
+          <Link to="/privacy-policy" className="footer_link">Privacy Policy</Link>
+          <span className="divider">|</span>
+          <Link to="/terms-conditions" className="footer_link">Terms & Conditions</Link>
+        </div>
+        <div className="copyright">© 2026 Devi Jewellers. All rights reserved.</div>
         <div className="footer_social">
           <div className="icon_container">
             <IconContext.Provider value={{className: "icon" }}>
@@ -43,4 +49,4 @@ const Footer = () => {
   )
 }
 
-export default Footer
+export default Footer;

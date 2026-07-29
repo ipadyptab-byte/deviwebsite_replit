@@ -26,6 +26,13 @@ const TermsConditions = () => {
             </div>
 
             <div className="terms_section">
+              <h2>Customer Communication</h2>
+              <p>
+                You agree to receive communication through emails, telephone and SMS or RCS and WhatsApp.
+              </p>
+            </div>
+
+            <div className="terms_section">
               <h2>Product Information</h2>
               <p>We strive to provide accurate product descriptions, images and pricing.</p>
               <p>However:</p>

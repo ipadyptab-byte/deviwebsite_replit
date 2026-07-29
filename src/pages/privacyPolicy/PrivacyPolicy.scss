@@ -1,0 +1,135 @@
+@import '../../component/Components.scss';
+
+.policy_page_wrapper {
+  padding: 50px 0 80px 0;
+  background-color: #faf9f8;
+  font-family: $poppins;
+  color: #333;
+
+  .policy_header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid $primary_color;
+
+    h1 {
+      font-size: 38px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 10px;
+
+      @media (max-width: 768px) {
+        font-size: 28px;
+      }
+    }
+
+    .effective_date {
+      font-size: 14px;
+      color: #777;
+      font-weight: 500;
+      background: #eee;
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+  }
+
+  .policy_body {
+    background: #fff;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+    @media (max-width: 768px) {
+      padding: 24px 18px;
+    }
+
+    .intro_text {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #444;
+      margin-bottom: 30px;
+      font-weight: 400;
+    }
+
+    .policy_section {
+      margin-bottom: 32px;
+
+      h2 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        &::before {
+          content: '';
+          display: inline-block;
+          width: 4px;
+          height: 18px;
+          background-color: $primary_color_dark;
+          border-radius: 2px;
+        }
+      }
+
+      p {
+        font-size: 15px;
+        line-height: 1.7;
+        color: #555;
+        margin-bottom: 10px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 10px;
+
+        li {
+          position: relative;
+          padding-left: 24px;
+          margin-bottom: 8px;
+          font-size: 15px;
+          color: #555;
+          line-height: 1.6;
+
+          &::before {
+            content: '•';
+            position: absolute;
+            left: 8px;
+            color: $primary_color_dark;
+            font-size: 18px;
+            top: -2px;
+          }
+        }
+      }
+
+      .contact_card {
+        background-color: #fcf8f6;
+        border: 1px solid #f2e2dc;
+        border-radius: 8px;
+        padding: 20px 25px;
+        margin-top: 15px;
+
+        p {
+          margin-bottom: 6px;
+          color: #333;
+
+          strong {
+            color: #1a1a1a;
+          }
+
+          a {
+            color: #d85c3b;
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}
